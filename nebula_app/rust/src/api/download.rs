@@ -201,3 +201,63 @@ pub async fn subscribe_events(sink: StreamSink<NebulaEvent>) -> Result<(), Strin
 
     Ok(())
 }
+
+/// 视频信息（传递给 Dart）
+#[frb(dart_metadata = ("freezed"))]
+pub struct VideoInfo {
+    pub id: String,
+    pub title: String,
+    pub thumbnail: Option<String>,
+    pub duration: Option<u64>,
+    pub uploader: Option<String>,
+    pub formats: Vec<VideoFormat>,
+}
+
+/// 视频格式选项
+#[frb(dart_metadata = ("freezed"))]
+pub struct VideoFormat {
+    pub format_id: String,
+    pub ext: String,
+    pub resolution: Option<String>,
+    pub filesize: Option<u64>,
+    pub format_note: Option<String>,
+}
+
+/// 检查 URL 是否为视频网站
+#[frb]
+pub fn is_video_url(url: String) -> bool {
+    nebula_core::protocol::video::VideoHandler::is_video_url(&url)
+}
+
+/// 获取视频信息
+///
+/// 需要系统已安装 yt-dlp
+#[frb]
+pub async fn get_video_info(url: String) -> Result<VideoInfo, String> {
+    let guard = MANAGER.read().await;
+    let manager = guard.as_ref().ok_or("下载管理器未初始化")?;
+
+    let handler = nebula_core::protocol::video::VideoHandler::new(manager.download_dir().clone())
+        .map_err(|e| e.to_string())?;
+
+    let info = handler.get_video_info(&url).await.map_err(|e| e.to_string())?;
+
+    Ok(VideoInfo {
+        id: info.id,
+        title: info.title,
+        thumbnail: info.thumbnail,
+        duration: info.duration,
+        uploader: info.uploader,
+        formats: info
+            .formats
+            .into_iter()
+            .map(|f| VideoFormat {
+                format_id: f.format_id,
+                ext: f.ext,
+                resolution: f.resolution,
+                filesize: f.filesize,
+                format_note: f.format_note,
+            })
+            .collect(),
+    })
+}

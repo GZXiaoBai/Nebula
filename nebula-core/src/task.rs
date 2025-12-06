@@ -78,6 +78,14 @@ pub enum DownloadSource {
         /// FTP URL
         url: String,
     },
+
+    /// 视频网站 (Bilibili, YouTube 等)
+    Video {
+        /// 视频页面 URL
+        url: String,
+        /// 选择的画质 ID
+        format_id: Option<String>,
+    },
 }
 
 impl DownloadSource {
@@ -106,6 +114,12 @@ impl DownloadSource {
                 uri: source.to_string(),
                 display_name,
             }
+        } else if Self::is_video_url(source) {
+            // 视频网站检测必须在普通 HTTP 之前！
+            Self::Video {
+                url: source.to_string(),
+                format_id: None,
+            }
         } else if source_lower.starts_with("http://") || source_lower.starts_with("https://") {
             Self::Http {
                 url: source.to_string(),
@@ -120,6 +134,28 @@ impl DownloadSource {
                 path: PathBuf::from(source),
             }
         }
+    }
+
+    /// 检查 URL 是否为支持的视频网站
+    fn is_video_url(url: &str) -> bool {
+        let video_domains = [
+            "youtube.com",
+            "youtu.be",
+            "bilibili.com",
+            "b23.tv",
+            "twitter.com",
+            "x.com",
+            "tiktok.com",
+            "douyin.com",
+            "vimeo.com",
+            "dailymotion.com",
+            "twitch.tv",
+            "instagram.com",
+            "facebook.com",
+            "nicovideo.jp",
+        ];
+
+        video_domains.iter().any(|domain| url.contains(domain))
     }
 
     /// 获取来源的显示名称
@@ -145,6 +181,16 @@ impl DownloadSource {
                 .unwrap_or("种子文件")
                 .to_string(),
             Self::Ftp { url } => url.rsplit('/').next().unwrap_or("FTP 文件").to_string(),
+            Self::Video { url, .. } => {
+                // 从视频 URL 提取标识
+                if url.contains("bilibili.com") || url.contains("b23.tv") {
+                    "Bilibili 视频".to_string()
+                } else if url.contains("youtube.com") || url.contains("youtu.be") {
+                    "YouTube 视频".to_string()
+                } else {
+                    "视频下载".to_string()
+                }
+            }
         }
     }
 
@@ -155,6 +201,7 @@ impl DownloadSource {
             Self::Magnet { .. } => "BitTorrent",
             Self::Torrent { .. } => "BitTorrent",
             Self::Ftp { .. } => "FTP",
+            Self::Video { .. } => "Video",
         }
     }
 }

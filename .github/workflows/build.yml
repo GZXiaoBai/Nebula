@@ -45,6 +45,12 @@ jobs:
         working-directory: nebula_app
         run: flutter_rust_bridge_codegen generate
 
+      - name: Download yt-dlp
+        run: |
+          mkdir -p nebula_app/macos/Runner/Resources
+          curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_macos -o nebula_app/macos/Runner/Resources/yt-dlp
+          chmod +x nebula_app/macos/Runner/Resources/yt-dlp
+
       - name: Build macOS Release
         working-directory: nebula_app
         run: flutter build macos --release
@@ -102,9 +108,17 @@ jobs:
         working-directory: nebula_app
         run: flutter_rust_bridge_codegen generate
 
+      - name: Download yt-dlp
+        run: |
+          Invoke-WebRequest -Uri "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe" -OutFile "nebula_app\windows\runner\Resources\yt-dlp.exe"
+
       - name: Build Windows Release
         working-directory: nebula_app
         run: flutter build windows --release
+
+      - name: Copy yt-dlp to build
+        run: |
+          Copy-Item "nebula_app\windows\runner\Resources\yt-dlp.exe" "nebula_app\build\windows\x64\runner\Release\"
 
       - name: Create ZIP
         run: |

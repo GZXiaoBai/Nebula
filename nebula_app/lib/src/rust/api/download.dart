@@ -52,6 +52,16 @@ Future<void> cancelDownload({
 Future<Stream<NebulaEvent>> subscribeEvents() =>
     RustLib.instance.api.crateApiDownloadSubscribeEvents();
 
+/// 检查 URL 是否为视频网站
+Future<bool> isVideoUrl({required String url}) =>
+    RustLib.instance.api.crateApiDownloadIsVideoUrl(url: url);
+
+/// 获取视频信息
+///
+/// 需要系统已安装 yt-dlp
+Future<VideoInfo> getVideoInfo({required String url}) =>
+    RustLib.instance.api.crateApiDownloadGetVideoInfo(url: url);
+
 @freezed
 sealed class NebulaEvent with _$NebulaEvent {
   const NebulaEvent._();
@@ -97,4 +107,29 @@ sealed class ProgressEvent with _$ProgressEvent {
     required double percentage,
     BigInt? etaSecs,
   }) = _ProgressEvent;
+}
+
+/// 视频格式选项
+@freezed
+sealed class VideoFormat with _$VideoFormat {
+  const factory VideoFormat({
+    required String formatId,
+    required String ext,
+    String? resolution,
+    BigInt? filesize,
+    String? formatNote,
+  }) = _VideoFormat;
+}
+
+/// 视频信息（传递给 Dart）
+@freezed
+sealed class VideoInfo with _$VideoInfo {
+  const factory VideoInfo({
+    required String id,
+    required String title,
+    String? thumbnail,
+    BigInt? duration,
+    String? uploader,
+    required List<VideoFormat> formats,
+  }) = _VideoInfo;
 }

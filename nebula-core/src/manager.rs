@@ -7,6 +7,7 @@ use crate::error::{NebulaError, Result};
 use crate::event::{DownloadEvent, Progress};
 use crate::protocol::http::HttpHandler;
 use crate::protocol::torrent::TorrentHandler;
+use crate::protocol::video::VideoHandler;
 use crate::protocol::ProtocolHandler;
 use crate::task::{DownloadSource, DownloadTask, TaskId, TaskStatus};
 
@@ -58,8 +59,8 @@ pub struct DownloadManager {
     /// HTTP 下载处理器
     http_handler: Arc<HttpHandler>,
 
-    /// BitTorrent 下载处理器
-    torrent_handler: Arc<TorrentHandler>,
+    /// BitTorrent 下载处理器 (可选，初始化失败时为 None)
+    torrent_handler: Option<Arc<TorrentHandler>>,
 
     /// 事件广播发送端
     event_tx: broadcast::Sender<DownloadEvent>,
@@ -85,10 +86,18 @@ impl DownloadManager {
         // 创建 HTTP 处理器
         let http_handler = Arc::new(HttpHandler::new(config.http.clone())?);
 
-        // 创建 BitTorrent 处理器
-        // 使用下载目录下的 .nebula 子目录存储 DHT 状态等
+        // 创建 BitTorrent 处理器 (可选)
         let data_dir = config.download_dir.join(".nebula");
-        let torrent_handler = Arc::new(TorrentHandler::new(config.torrent.clone(), data_dir).await?);
+        let torrent_handler = match TorrentHandler::new(config.torrent.clone(), data_dir).await {
+            Ok(handler) => {
+                info!("BitTorrent 处理器初始化成功");
+                Some(Arc::new(handler))
+            }
+            Err(e) => {
+                warn!("BitTorrent 处理器初始化失败，磁力链接下载将不可用: {}", e);
+                None
+            }
+        };
 
         // 创建事件通道
         let (event_tx, _) = broadcast::channel(EVENT_CHANNEL_CAPACITY);
@@ -186,7 +195,14 @@ impl DownloadManager {
                 });
             }
             DownloadSource::Magnet { .. } | DownloadSource::Torrent { .. } => {
-                let handler = Arc::clone(&self.torrent_handler);
+                let handler = match &self.torrent_handler {
+                    Some(h) => Arc::clone(h),
+                    None => {
+                        return Err(NebulaError::UnsupportedProtocol(
+                            "BitTorrent 未初始化，磁力链接下载不可用".to_string(),
+                        ));
+                    }
+                };
                 tokio::spawn(async move {
                     // 更新任务状态
                     {
@@ -216,8 +232,90 @@ impl DownloadManager {
                 });
             }
             DownloadSource::Ftp { .. } => {
-                warn!("FTP 协议暂不支持");
+                warn!("暂不支持 FTP 协议");
                 return Err(NebulaError::UnsupportedProtocol("FTP".to_string()));
+            }
+            DownloadSource::Video { url, format_id } => {
+                let download_dir = self.config.download_dir.clone();
+                let url_clone = url.clone();
+                let format_id_clone = format_id.clone();
+                
+                tokio::spawn(async move {
+                    // 创建 VideoHandler
+                    let handler = match VideoHandler::new(download_dir.clone()) {
+                        Ok(h) => h,
+                        Err(e) => {
+                            error!("创建 VideoHandler 失败: {}", e);
+                            let _ = event_tx.send(DownloadEvent::TaskFailed {
+                                task_id,
+                                error: e.to_string(),
+                            });
+                            return;
+                        }
+                    };
+
+                    // 1. 先获取视频信息
+                    info!("获取视频信息: {}", url_clone);
+                    match handler.get_video_info(&url_clone).await {
+                        Ok(video_info) => {
+                            // 发送元数据事件，更新任务名称
+                            let _ = event_tx.send(DownloadEvent::MetadataReceived {
+                                task_id,
+                                name: video_info.title.clone(),
+                                total_size: 0, // 视频大小在下载时才知道
+                                file_count: 1,
+                            });
+
+                            // 更新任务名称
+                            {
+                                let mut tasks_guard = tasks.write().await;
+                                if let Some(task) = tasks_guard.get_mut(&task_id) {
+                                    task.name = video_info.title.clone();
+                                    task.mark_started();
+                                }
+                            }
+
+                            // 2. 开始下载
+                            let (tx, mut rx) = tokio::sync::mpsc::channel(100);
+                            
+                            // 转发事件到 broadcast channel
+                            let event_tx_clone = event_tx.clone();
+                            tokio::spawn(async move {
+                                while let Some(event) = rx.recv().await {
+                                    let _ = event_tx_clone.send(event);
+                                }
+                            });
+
+                            if let Err(e) = handler
+                                .download_video(&url_clone, format_id_clone.as_deref(), tx, task_id)
+                                .await
+                            {
+                                error!("视频下载失败: {}", e);
+                                let _ = event_tx.send(DownloadEvent::TaskFailed {
+                                    task_id,
+                                    error: e.to_string(),
+                                });
+
+                                let mut tasks_guard = tasks.write().await;
+                                if let Some(task) = tasks_guard.get_mut(&task_id) {
+                                    task.mark_failed(e.to_string(), 0);
+                                }
+                            } else {
+                                let mut tasks_guard = tasks.write().await;
+                                if let Some(task) = tasks_guard.get_mut(&task_id) {
+                                    task.mark_completed();
+                                }
+                            }
+                        }
+                        Err(e) => {
+                            error!("获取视频信息失败: {}", e);
+                            let _ = event_tx.send(DownloadEvent::TaskFailed {
+                                task_id,
+                                error: format!("获取视频信息失败: {}", e),
+                            });
+                        }
+                    }
+                });
             }
         }
 
@@ -246,9 +344,13 @@ impl DownloadManager {
                 self.http_handler.pause(task_id).await?;
             }
             DownloadSource::Magnet { .. } | DownloadSource::Torrent { .. } => {
-                self.torrent_handler.pause(task_id).await?;
+                if let Some(ref handler) = self.torrent_handler {
+                    handler.pause(task_id).await?;
+                } else {
+                    return Err(NebulaError::UnsupportedProtocol("BitTorrent 未初始化".to_string()));
+                }
             }
-            _ => return Err(NebulaError::UnsupportedProtocol("FTP".to_string())),
+            _ => return Err(NebulaError::UnsupportedProtocol("Unsupported".to_string())),
         }
 
         // 更新任务状态
@@ -286,9 +388,13 @@ impl DownloadManager {
                 self.http_handler.resume(task_id).await?;
             }
             DownloadSource::Magnet { .. } | DownloadSource::Torrent { .. } => {
-                self.torrent_handler.resume(task_id).await?;
+                if let Some(ref handler) = self.torrent_handler {
+                    handler.resume(task_id).await?;
+                } else {
+                    return Err(NebulaError::UnsupportedProtocol("BitTorrent 未初始化".to_string()));
+                }
             }
-            _ => return Err(NebulaError::UnsupportedProtocol("FTP".to_string())),
+            _ => return Err(NebulaError::UnsupportedProtocol("Unsupported".to_string())),
         }
 
         // 更新任务状态
@@ -323,7 +429,9 @@ impl DownloadManager {
                 let _ = self.http_handler.cancel(task_id, delete_files).await;
             }
             DownloadSource::Magnet { .. } | DownloadSource::Torrent { .. } => {
-                let _ = self.torrent_handler.cancel(task_id, delete_files).await;
+                if let Some(ref handler) = self.torrent_handler {
+                    let _ = handler.cancel(task_id, delete_files).await;
+                }
             }
             _ => {}
         }
@@ -357,9 +465,13 @@ impl DownloadManager {
         match &task.source {
             DownloadSource::Http { .. } => self.http_handler.get_progress(task_id).await,
             DownloadSource::Magnet { .. } | DownloadSource::Torrent { .. } => {
-                self.torrent_handler.get_progress(task_id).await
+                if let Some(ref handler) = self.torrent_handler {
+                    handler.get_progress(task_id).await
+                } else {
+                    Err(NebulaError::UnsupportedProtocol("BitTorrent 未初始化".to_string()))
+                }
             }
-            _ => Err(NebulaError::UnsupportedProtocol("FTP".to_string())),
+            _ => Err(NebulaError::UnsupportedProtocol("Unsupported".to_string())),
         }
     }
 
@@ -373,6 +485,11 @@ impl DownloadManager {
     /// 获取当前配置
     pub fn config(&self) -> &ManagerConfig {
         &self.config
+    }
+
+    /// 获取下载目录
+    pub fn download_dir(&self) -> &PathBuf {
+        &self.config.download_dir
     }
 
     /// 获取活跃任务数量

@@ -37,7 +37,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueMoi,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.11.1";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 1045362315;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 1624393700;
 
 // Section: executor
 
@@ -114,6 +114,42 @@ fn wire__crate__api__download__cancel_download_impl(
                         let output_ok =
                             crate::api::download::cancel_download(api_task_id, api_delete_files)
                                 .await?;
+                        Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
+fn wire__crate__api__download__get_video_info_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::SseCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "get_video_info",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_url = <String>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| async move {
+                transform_result_sse::<_, String>(
+                    (move || async move {
+                        let output_ok = crate::api::download::get_video_info(api_url).await?;
                         Ok(output_ok)
                     })()
                     .await,
@@ -219,6 +255,40 @@ fn wire__crate__api__download__init_download_manager_impl(
                     })()
                     .await,
                 )
+            }
+        },
+    )
+}
+fn wire__crate__api__download__is_video_url_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "is_video_url",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_url = <String>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, ()>((move || {
+                    let output_ok =
+                        Result::<_, ()>::Ok(crate::api::download::is_video_url(api_url))?;
+                    Ok(output_ok)
+                })())
             }
         },
     )
@@ -389,6 +459,20 @@ impl SseDecode for Vec<u8> {
     }
 }
 
+impl SseDecode for Vec<crate::api::download::VideoFormat> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut len_ = <i32>::sse_decode(deserializer);
+        let mut ans_ = vec![];
+        for idx_ in 0..len_ {
+            ans_.push(<crate::api::download::VideoFormat>::sse_decode(
+                deserializer,
+            ));
+        }
+        return ans_;
+    }
+}
+
 impl SseDecode for crate::api::download::NebulaEvent {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -468,6 +552,17 @@ impl SseDecode for crate::api::download::NebulaEvent {
     }
 }
 
+impl SseDecode for Option<String> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        if (<bool>::sse_decode(deserializer)) {
+            return Some(<String>::sse_decode(deserializer));
+        } else {
+            return None;
+        }
+    }
+}
+
 impl SseDecode for Option<u64> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -525,6 +620,44 @@ impl SseDecode for usize {
     }
 }
 
+impl SseDecode for crate::api::download::VideoFormat {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_formatId = <String>::sse_decode(deserializer);
+        let mut var_ext = <String>::sse_decode(deserializer);
+        let mut var_resolution = <Option<String>>::sse_decode(deserializer);
+        let mut var_filesize = <Option<u64>>::sse_decode(deserializer);
+        let mut var_formatNote = <Option<String>>::sse_decode(deserializer);
+        return crate::api::download::VideoFormat {
+            format_id: var_formatId,
+            ext: var_ext,
+            resolution: var_resolution,
+            filesize: var_filesize,
+            format_note: var_formatNote,
+        };
+    }
+}
+
+impl SseDecode for crate::api::download::VideoInfo {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_id = <String>::sse_decode(deserializer);
+        let mut var_title = <String>::sse_decode(deserializer);
+        let mut var_thumbnail = <Option<String>>::sse_decode(deserializer);
+        let mut var_duration = <Option<u64>>::sse_decode(deserializer);
+        let mut var_uploader = <Option<String>>::sse_decode(deserializer);
+        let mut var_formats = <Vec<crate::api::download::VideoFormat>>::sse_decode(deserializer);
+        return crate::api::download::VideoInfo {
+            id: var_id,
+            title: var_title,
+            thumbnail: var_thumbnail,
+            duration: var_duration,
+            uploader: var_uploader,
+            formats: var_formats,
+        };
+    }
+}
+
 impl SseDecode for i32 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -543,16 +676,18 @@ fn pde_ffi_dispatcher_primary_impl(
     match func_id {
         1 => wire__crate__api__download__add_download_impl(port, ptr, rust_vec_len, data_len),
         2 => wire__crate__api__download__cancel_download_impl(port, ptr, rust_vec_len, data_len),
-        4 => wire__crate__api__simple__init_app_impl(port, ptr, rust_vec_len, data_len),
-        5 => wire__crate__api__download__init_download_manager_impl(
+        3 => wire__crate__api__download__get_video_info_impl(port, ptr, rust_vec_len, data_len),
+        5 => wire__crate__api__simple__init_app_impl(port, ptr, rust_vec_len, data_len),
+        6 => wire__crate__api__download__init_download_manager_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        6 => wire__crate__api__download__pause_download_impl(port, ptr, rust_vec_len, data_len),
-        7 => wire__crate__api__download__resume_download_impl(port, ptr, rust_vec_len, data_len),
-        8 => wire__crate__api__download__subscribe_events_impl(port, ptr, rust_vec_len, data_len),
+        7 => wire__crate__api__download__is_video_url_impl(port, ptr, rust_vec_len, data_len),
+        8 => wire__crate__api__download__pause_download_impl(port, ptr, rust_vec_len, data_len),
+        9 => wire__crate__api__download__resume_download_impl(port, ptr, rust_vec_len, data_len),
+        10 => wire__crate__api__download__subscribe_events_impl(port, ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }
@@ -565,7 +700,7 @@ fn pde_ffi_dispatcher_sync_impl(
 ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
     // Codec=Pde (Serialization + dispatch), see doc to use other codecs
     match func_id {
-        3 => wire__crate__api__simple__greet_impl(ptr, rust_vec_len, data_len),
+        4 => wire__crate__api__simple__greet_impl(ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }
@@ -664,6 +799,55 @@ impl flutter_rust_bridge::IntoIntoDart<crate::api::download::ProgressEvent>
         self
     }
 }
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::download::VideoFormat {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.format_id.into_into_dart().into_dart(),
+            self.ext.into_into_dart().into_dart(),
+            self.resolution.into_into_dart().into_dart(),
+            self.filesize.into_into_dart().into_dart(),
+            self.format_note.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::api::download::VideoFormat
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::download::VideoFormat>
+    for crate::api::download::VideoFormat
+{
+    fn into_into_dart(self) -> crate::api::download::VideoFormat {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::download::VideoInfo {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.id.into_into_dart().into_dart(),
+            self.title.into_into_dart().into_dart(),
+            self.thumbnail.into_into_dart().into_dart(),
+            self.duration.into_into_dart().into_dart(),
+            self.uploader.into_into_dart().into_dart(),
+            self.formats.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::api::download::VideoInfo
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::download::VideoInfo>
+    for crate::api::download::VideoInfo
+{
+    fn into_into_dart(self) -> crate::api::download::VideoInfo {
+        self
+    }
+}
 
 impl SseEncode for flutter_rust_bridge::for_generated::anyhow::Error {
     // Codec=Sse (Serialization based), see doc to use other codecs
@@ -708,6 +892,16 @@ impl SseEncode for Vec<u8> {
         <i32>::sse_encode(self.len() as _, serializer);
         for item in self {
             <u8>::sse_encode(item, serializer);
+        }
+    }
+}
+
+impl SseEncode for Vec<crate::api::download::VideoFormat> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i32>::sse_encode(self.len() as _, serializer);
+        for item in self {
+            <crate::api::download::VideoFormat>::sse_encode(item, serializer);
         }
     }
 }
@@ -770,6 +964,16 @@ impl SseEncode for crate::api::download::NebulaEvent {
     }
 }
 
+impl SseEncode for Option<String> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <bool>::sse_encode(self.is_some(), serializer);
+        if let Some(value) = self {
+            <String>::sse_encode(value, serializer);
+        }
+    }
+}
+
 impl SseEncode for Option<u64> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -818,6 +1022,29 @@ impl SseEncode for usize {
             .cursor
             .write_u64::<NativeEndian>(self as _)
             .unwrap();
+    }
+}
+
+impl SseEncode for crate::api::download::VideoFormat {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <String>::sse_encode(self.format_id, serializer);
+        <String>::sse_encode(self.ext, serializer);
+        <Option<String>>::sse_encode(self.resolution, serializer);
+        <Option<u64>>::sse_encode(self.filesize, serializer);
+        <Option<String>>::sse_encode(self.format_note, serializer);
+    }
+}
+
+impl SseEncode for crate::api::download::VideoInfo {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <String>::sse_encode(self.id, serializer);
+        <String>::sse_encode(self.title, serializer);
+        <Option<String>>::sse_encode(self.thumbnail, serializer);
+        <Option<u64>>::sse_encode(self.duration, serializer);
+        <Option<String>>::sse_encode(self.uploader, serializer);
+        <Vec<crate::api::download::VideoFormat>>::sse_encode(self.formats, serializer);
     }
 }
 

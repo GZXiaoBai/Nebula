@@ -1125,4 +1125,539 @@ as BigInt?,
 
 }
 
+/// @nodoc
+mixin _$VideoFormat {
+
+ String get formatId; String get ext; String? get resolution; BigInt? get filesize; String? get formatNote;
+/// Create a copy of VideoFormat
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$VideoFormatCopyWith<VideoFormat> get copyWith => _$VideoFormatCopyWithImpl<VideoFormat>(this as VideoFormat, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is VideoFormat&&(identical(other.formatId, formatId) || other.formatId == formatId)&&(identical(other.ext, ext) || other.ext == ext)&&(identical(other.resolution, resolution) || other.resolution == resolution)&&(identical(other.filesize, filesize) || other.filesize == filesize)&&(identical(other.formatNote, formatNote) || other.formatNote == formatNote));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,formatId,ext,resolution,filesize,formatNote);
+
+@override
+String toString() {
+  return 'VideoFormat(formatId: $formatId, ext: $ext, resolution: $resolution, filesize: $filesize, formatNote: $formatNote)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $VideoFormatCopyWith<$Res>  {
+  factory $VideoFormatCopyWith(VideoFormat value, $Res Function(VideoFormat) _then) = _$VideoFormatCopyWithImpl;
+@useResult
+$Res call({
+ String formatId, String ext, String? resolution, BigInt? filesize, String? formatNote
+});
+
+
+
+
+}
+/// @nodoc
+class _$VideoFormatCopyWithImpl<$Res>
+    implements $VideoFormatCopyWith<$Res> {
+  _$VideoFormatCopyWithImpl(this._self, this._then);
+
+  final VideoFormat _self;
+  final $Res Function(VideoFormat) _then;
+
+/// Create a copy of VideoFormat
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? formatId = null,Object? ext = null,Object? resolution = freezed,Object? filesize = freezed,Object? formatNote = freezed,}) {
+  return _then(_self.copyWith(
+formatId: null == formatId ? _self.formatId : formatId // ignore: cast_nullable_to_non_nullable
+as String,ext: null == ext ? _self.ext : ext // ignore: cast_nullable_to_non_nullable
+as String,resolution: freezed == resolution ? _self.resolution : resolution // ignore: cast_nullable_to_non_nullable
+as String?,filesize: freezed == filesize ? _self.filesize : filesize // ignore: cast_nullable_to_non_nullable
+as BigInt?,formatNote: freezed == formatNote ? _self.formatNote : formatNote // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [VideoFormat].
+extension VideoFormatPatterns on VideoFormat {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _VideoFormat value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _VideoFormat() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _VideoFormat value)  $default,){
+final _that = this;
+switch (_that) {
+case _VideoFormat():
+return $default(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _VideoFormat value)?  $default,){
+final _that = this;
+switch (_that) {
+case _VideoFormat() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String formatId,  String ext,  String? resolution,  BigInt? filesize,  String? formatNote)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _VideoFormat() when $default != null:
+return $default(_that.formatId,_that.ext,_that.resolution,_that.filesize,_that.formatNote);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String formatId,  String ext,  String? resolution,  BigInt? filesize,  String? formatNote)  $default,) {final _that = this;
+switch (_that) {
+case _VideoFormat():
+return $default(_that.formatId,_that.ext,_that.resolution,_that.filesize,_that.formatNote);}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String formatId,  String ext,  String? resolution,  BigInt? filesize,  String? formatNote)?  $default,) {final _that = this;
+switch (_that) {
+case _VideoFormat() when $default != null:
+return $default(_that.formatId,_that.ext,_that.resolution,_that.filesize,_that.formatNote);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class _VideoFormat implements VideoFormat {
+  const _VideoFormat({required this.formatId, required this.ext, this.resolution, this.filesize, this.formatNote});
+  
+
+@override final  String formatId;
+@override final  String ext;
+@override final  String? resolution;
+@override final  BigInt? filesize;
+@override final  String? formatNote;
+
+/// Create a copy of VideoFormat
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$VideoFormatCopyWith<_VideoFormat> get copyWith => __$VideoFormatCopyWithImpl<_VideoFormat>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _VideoFormat&&(identical(other.formatId, formatId) || other.formatId == formatId)&&(identical(other.ext, ext) || other.ext == ext)&&(identical(other.resolution, resolution) || other.resolution == resolution)&&(identical(other.filesize, filesize) || other.filesize == filesize)&&(identical(other.formatNote, formatNote) || other.formatNote == formatNote));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,formatId,ext,resolution,filesize,formatNote);
+
+@override
+String toString() {
+  return 'VideoFormat(formatId: $formatId, ext: $ext, resolution: $resolution, filesize: $filesize, formatNote: $formatNote)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$VideoFormatCopyWith<$Res> implements $VideoFormatCopyWith<$Res> {
+  factory _$VideoFormatCopyWith(_VideoFormat value, $Res Function(_VideoFormat) _then) = __$VideoFormatCopyWithImpl;
+@override @useResult
+$Res call({
+ String formatId, String ext, String? resolution, BigInt? filesize, String? formatNote
+});
+
+
+
+
+}
+/// @nodoc
+class __$VideoFormatCopyWithImpl<$Res>
+    implements _$VideoFormatCopyWith<$Res> {
+  __$VideoFormatCopyWithImpl(this._self, this._then);
+
+  final _VideoFormat _self;
+  final $Res Function(_VideoFormat) _then;
+
+/// Create a copy of VideoFormat
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? formatId = null,Object? ext = null,Object? resolution = freezed,Object? filesize = freezed,Object? formatNote = freezed,}) {
+  return _then(_VideoFormat(
+formatId: null == formatId ? _self.formatId : formatId // ignore: cast_nullable_to_non_nullable
+as String,ext: null == ext ? _self.ext : ext // ignore: cast_nullable_to_non_nullable
+as String,resolution: freezed == resolution ? _self.resolution : resolution // ignore: cast_nullable_to_non_nullable
+as String?,filesize: freezed == filesize ? _self.filesize : filesize // ignore: cast_nullable_to_non_nullable
+as BigInt?,formatNote: freezed == formatNote ? _self.formatNote : formatNote // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
+
+}
+
+/// @nodoc
+mixin _$VideoInfo {
+
+ String get id; String get title; String? get thumbnail; BigInt? get duration; String? get uploader; List<VideoFormat> get formats;
+/// Create a copy of VideoInfo
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$VideoInfoCopyWith<VideoInfo> get copyWith => _$VideoInfoCopyWithImpl<VideoInfo>(this as VideoInfo, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is VideoInfo&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.thumbnail, thumbnail) || other.thumbnail == thumbnail)&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.uploader, uploader) || other.uploader == uploader)&&const DeepCollectionEquality().equals(other.formats, formats));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,id,title,thumbnail,duration,uploader,const DeepCollectionEquality().hash(formats));
+
+@override
+String toString() {
+  return 'VideoInfo(id: $id, title: $title, thumbnail: $thumbnail, duration: $duration, uploader: $uploader, formats: $formats)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $VideoInfoCopyWith<$Res>  {
+  factory $VideoInfoCopyWith(VideoInfo value, $Res Function(VideoInfo) _then) = _$VideoInfoCopyWithImpl;
+@useResult
+$Res call({
+ String id, String title, String? thumbnail, BigInt? duration, String? uploader, List<VideoFormat> formats
+});
+
+
+
+
+}
+/// @nodoc
+class _$VideoInfoCopyWithImpl<$Res>
+    implements $VideoInfoCopyWith<$Res> {
+  _$VideoInfoCopyWithImpl(this._self, this._then);
+
+  final VideoInfo _self;
+  final $Res Function(VideoInfo) _then;
+
+/// Create a copy of VideoInfo
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? thumbnail = freezed,Object? duration = freezed,Object? uploader = freezed,Object? formats = null,}) {
+  return _then(_self.copyWith(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,thumbnail: freezed == thumbnail ? _self.thumbnail : thumbnail // ignore: cast_nullable_to_non_nullable
+as String?,duration: freezed == duration ? _self.duration : duration // ignore: cast_nullable_to_non_nullable
+as BigInt?,uploader: freezed == uploader ? _self.uploader : uploader // ignore: cast_nullable_to_non_nullable
+as String?,formats: null == formats ? _self.formats : formats // ignore: cast_nullable_to_non_nullable
+as List<VideoFormat>,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [VideoInfo].
+extension VideoInfoPatterns on VideoInfo {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _VideoInfo value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _VideoInfo() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _VideoInfo value)  $default,){
+final _that = this;
+switch (_that) {
+case _VideoInfo():
+return $default(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _VideoInfo value)?  $default,){
+final _that = this;
+switch (_that) {
+case _VideoInfo() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  String? thumbnail,  BigInt? duration,  String? uploader,  List<VideoFormat> formats)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _VideoInfo() when $default != null:
+return $default(_that.id,_that.title,_that.thumbnail,_that.duration,_that.uploader,_that.formats);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  String? thumbnail,  BigInt? duration,  String? uploader,  List<VideoFormat> formats)  $default,) {final _that = this;
+switch (_that) {
+case _VideoInfo():
+return $default(_that.id,_that.title,_that.thumbnail,_that.duration,_that.uploader,_that.formats);}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  String? thumbnail,  BigInt? duration,  String? uploader,  List<VideoFormat> formats)?  $default,) {final _that = this;
+switch (_that) {
+case _VideoInfo() when $default != null:
+return $default(_that.id,_that.title,_that.thumbnail,_that.duration,_that.uploader,_that.formats);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class _VideoInfo implements VideoInfo {
+  const _VideoInfo({required this.id, required this.title, this.thumbnail, this.duration, this.uploader, required final  List<VideoFormat> formats}): _formats = formats;
+  
+
+@override final  String id;
+@override final  String title;
+@override final  String? thumbnail;
+@override final  BigInt? duration;
+@override final  String? uploader;
+ final  List<VideoFormat> _formats;
+@override List<VideoFormat> get formats {
+  if (_formats is EqualUnmodifiableListView) return _formats;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_formats);
+}
+
+
+/// Create a copy of VideoInfo
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$VideoInfoCopyWith<_VideoInfo> get copyWith => __$VideoInfoCopyWithImpl<_VideoInfo>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _VideoInfo&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.thumbnail, thumbnail) || other.thumbnail == thumbnail)&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.uploader, uploader) || other.uploader == uploader)&&const DeepCollectionEquality().equals(other._formats, _formats));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,id,title,thumbnail,duration,uploader,const DeepCollectionEquality().hash(_formats));
+
+@override
+String toString() {
+  return 'VideoInfo(id: $id, title: $title, thumbnail: $thumbnail, duration: $duration, uploader: $uploader, formats: $formats)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$VideoInfoCopyWith<$Res> implements $VideoInfoCopyWith<$Res> {
+  factory _$VideoInfoCopyWith(_VideoInfo value, $Res Function(_VideoInfo) _then) = __$VideoInfoCopyWithImpl;
+@override @useResult
+$Res call({
+ String id, String title, String? thumbnail, BigInt? duration, String? uploader, List<VideoFormat> formats
+});
+
+
+
+
+}
+/// @nodoc
+class __$VideoInfoCopyWithImpl<$Res>
+    implements _$VideoInfoCopyWith<$Res> {
+  __$VideoInfoCopyWithImpl(this._self, this._then);
+
+  final _VideoInfo _self;
+  final $Res Function(_VideoInfo) _then;
+
+/// Create a copy of VideoInfo
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? thumbnail = freezed,Object? duration = freezed,Object? uploader = freezed,Object? formats = null,}) {
+  return _then(_VideoInfo(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,thumbnail: freezed == thumbnail ? _self.thumbnail : thumbnail // ignore: cast_nullable_to_non_nullable
+as String?,duration: freezed == duration ? _self.duration : duration // ignore: cast_nullable_to_non_nullable
+as BigInt?,uploader: freezed == uploader ? _self.uploader : uploader // ignore: cast_nullable_to_non_nullable
+as String?,formats: null == formats ? _self._formats : formats // ignore: cast_nullable_to_non_nullable
+as List<VideoFormat>,
+  ));
+}
+
+
+}
+
 // dart format on

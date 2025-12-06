@@ -67,7 +67,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.11.1';
 
   @override
-  int get rustContentHash => 1045362315;
+  int get rustContentHash => 1624393700;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -88,6 +88,8 @@ abstract class RustLibApi extends BaseApi {
     required bool deleteFiles,
   });
 
+  Future<VideoInfo> crateApiDownloadGetVideoInfo({required String url});
+
   String crateApiSimpleGreet({required String name});
 
   Future<void> crateApiSimpleInitApp();
@@ -95,6 +97,8 @@ abstract class RustLibApi extends BaseApi {
   Future<void> crateApiDownloadInitDownloadManager({
     required String downloadDir,
   });
+
+  Future<bool> crateApiDownloadIsVideoUrl({required String url});
 
   Future<void> crateApiDownloadPauseDownload({required String taskId});
 
@@ -182,13 +186,41 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
+  Future<VideoInfo> crateApiDownloadGetVideoInfo({required String url}) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(url, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 3,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_video_info,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiDownloadGetVideoInfoConstMeta,
+        argValues: [url],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiDownloadGetVideoInfoConstMeta =>
+      const TaskConstMeta(debugName: "get_video_info", argNames: ["url"]);
+
+  @override
   String crateApiSimpleGreet({required String name}) {
     return handler.executeSync(
       SyncTask(
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_String(name, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 3)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 4)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_String,
@@ -213,7 +245,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 4,
+            funcId: 5,
             port: port_,
           );
         },
@@ -243,7 +275,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 5,
+            funcId: 6,
             port: port_,
           );
         },
@@ -265,6 +297,34 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
+  Future<bool> crateApiDownloadIsVideoUrl({required String url}) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(url, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 7,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_bool,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiDownloadIsVideoUrlConstMeta,
+        argValues: [url],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiDownloadIsVideoUrlConstMeta =>
+      const TaskConstMeta(debugName: "is_video_url", argNames: ["url"]);
+
+  @override
   Future<void> crateApiDownloadPauseDownload({required String taskId}) {
     return handler.executeNormal(
       NormalTask(
@@ -274,7 +334,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 6,
+            funcId: 8,
             port: port_,
           );
         },
@@ -302,7 +362,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 7,
+            funcId: 9,
             port: port_,
           );
         },
@@ -331,7 +391,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 8,
+            funcId: 10,
             port: port_,
           );
         },
@@ -401,6 +461,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  List<VideoFormat> dco_decode_list_video_format(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return (raw as List<dynamic>).map(dco_decode_video_format).toList();
+  }
+
+  @protected
   NebulaEvent dco_decode_nebula_event(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     switch (raw[0]) {
@@ -439,6 +505,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       default:
         throw Exception("unreachable");
     }
+  }
+
+  @protected
+  String? dco_decode_opt_String(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw == null ? null : dco_decode_String(raw);
   }
 
   @protected
@@ -485,6 +557,37 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   BigInt dco_decode_usize(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return dcoDecodeU64(raw);
+  }
+
+  @protected
+  VideoFormat dco_decode_video_format(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 5)
+      throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
+    return VideoFormat(
+      formatId: dco_decode_String(arr[0]),
+      ext: dco_decode_String(arr[1]),
+      resolution: dco_decode_opt_String(arr[2]),
+      filesize: dco_decode_opt_box_autoadd_u_64(arr[3]),
+      formatNote: dco_decode_opt_String(arr[4]),
+    );
+  }
+
+  @protected
+  VideoInfo dco_decode_video_info(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 6)
+      throw Exception('unexpected arr length: expect 6 but see ${arr.length}');
+    return VideoInfo(
+      id: dco_decode_String(arr[0]),
+      title: dco_decode_String(arr[1]),
+      thumbnail: dco_decode_opt_String(arr[2]),
+      duration: dco_decode_opt_box_autoadd_u_64(arr[3]),
+      uploader: dco_decode_opt_String(arr[4]),
+      formats: dco_decode_list_video_format(arr[5]),
+    );
   }
 
   @protected
@@ -543,6 +646,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  List<VideoFormat> sse_decode_list_video_format(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    var len_ = sse_decode_i_32(deserializer);
+    var ans_ = <VideoFormat>[];
+    for (var idx_ = 0; idx_ < len_; ++idx_) {
+      ans_.add(sse_decode_video_format(deserializer));
+    }
+    return ans_;
+  }
+
+  @protected
   NebulaEvent sse_decode_nebula_event(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
 
@@ -591,6 +706,17 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         );
       default:
         throw UnimplementedError('');
+    }
+  }
+
+  @protected
+  String? sse_decode_opt_String(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    if (sse_decode_bool(deserializer)) {
+      return (sse_decode_String(deserializer));
+    } else {
+      return null;
     }
   }
 
@@ -645,6 +771,42 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   BigInt sse_decode_usize(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return deserializer.buffer.getBigUint64();
+  }
+
+  @protected
+  VideoFormat sse_decode_video_format(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_formatId = sse_decode_String(deserializer);
+    var var_ext = sse_decode_String(deserializer);
+    var var_resolution = sse_decode_opt_String(deserializer);
+    var var_filesize = sse_decode_opt_box_autoadd_u_64(deserializer);
+    var var_formatNote = sse_decode_opt_String(deserializer);
+    return VideoFormat(
+      formatId: var_formatId,
+      ext: var_ext,
+      resolution: var_resolution,
+      filesize: var_filesize,
+      formatNote: var_formatNote,
+    );
+  }
+
+  @protected
+  VideoInfo sse_decode_video_info(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_id = sse_decode_String(deserializer);
+    var var_title = sse_decode_String(deserializer);
+    var var_thumbnail = sse_decode_opt_String(deserializer);
+    var var_duration = sse_decode_opt_box_autoadd_u_64(deserializer);
+    var var_uploader = sse_decode_opt_String(deserializer);
+    var var_formats = sse_decode_list_video_format(deserializer);
+    return VideoInfo(
+      id: var_id,
+      title: var_title,
+      thumbnail: var_thumbnail,
+      duration: var_duration,
+      uploader: var_uploader,
+      formats: var_formats,
+    );
   }
 
   @protected
@@ -723,6 +885,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_list_video_format(
+    List<VideoFormat> self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.length, serializer);
+    for (final item in self) {
+      sse_encode_video_format(item, serializer);
+    }
+  }
+
+  @protected
   void sse_encode_nebula_event(NebulaEvent self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     switch (self) {
@@ -771,6 +945,16 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_opt_String(String? self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    sse_encode_bool(self != null, serializer);
+    if (self != null) {
+      sse_encode_String(self, serializer);
+    }
+  }
+
+  @protected
   void sse_encode_opt_box_autoadd_u_64(BigInt? self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
 
@@ -812,6 +996,27 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   void sse_encode_usize(BigInt self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     serializer.buffer.putBigUint64(self);
+  }
+
+  @protected
+  void sse_encode_video_format(VideoFormat self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_String(self.formatId, serializer);
+    sse_encode_String(self.ext, serializer);
+    sse_encode_opt_String(self.resolution, serializer);
+    sse_encode_opt_box_autoadd_u_64(self.filesize, serializer);
+    sse_encode_opt_String(self.formatNote, serializer);
+  }
+
+  @protected
+  void sse_encode_video_info(VideoInfo self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_String(self.id, serializer);
+    sse_encode_String(self.title, serializer);
+    sse_encode_opt_String(self.thumbnail, serializer);
+    sse_encode_opt_box_autoadd_u_64(self.duration, serializer);
+    sse_encode_opt_String(self.uploader, serializer);
+    sse_encode_list_video_format(self.formats, serializer);
   }
 
   @protected

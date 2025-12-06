@@ -4,6 +4,7 @@
 
 pub mod http;
 pub mod torrent;
+pub mod video;
 
 use crate::error::Result;
 use crate::event::{DownloadEvent, Progress};
