@@ -87,6 +87,20 @@ pub async fn add_download(source: String, save_path: String) -> Result<String, S
     Ok(task_id.to_string())
 }
 
+/// 添加视频下载任务（指定画质）
+#[frb]
+pub async fn add_video_download(url: String, save_path: String, format_id: Option<String>) -> Result<String, String> {
+    let guard = MANAGER.read().await;
+    let manager = guard.as_ref().ok_or("下载管理器未初始化")?;
+
+    let task_id = manager
+        .add_video_task(&url, format_id, PathBuf::from(&save_path))
+        .await
+        .map_err(|e| e.to_string())?;
+
+    Ok(task_id.to_string())
+}
+
 /// 暂停下载任务
 #[frb]
 pub async fn pause_download(task_id: String) -> Result<(), String> {

@@ -29,6 +29,17 @@ Future<String> addDownload({
   savePath: savePath,
 );
 
+/// 添加视频下载任务（指定画质）
+Future<String> addVideoDownload({
+  required String url,
+  required String savePath,
+  String? formatId,
+}) => RustLib.instance.api.crateApiDownloadAddVideoDownload(
+  url: url,
+  savePath: savePath,
+  formatId: formatId,
+);
+
 /// 暂停下载任务
 Future<void> pauseDownload({required String taskId}) =>
     RustLib.instance.api.crateApiDownloadPauseDownload(taskId: taskId);

@@ -113,6 +113,198 @@ impl DownloadManager {
         })
     }
 
+    /// 添加视频下载任务（支持指定画质）
+    pub async fn add_video_task(
+        &self,
+        url: &str,
+        format_id: Option<String>,
+        save_path: PathBuf,
+    ) -> Result<TaskId> {
+        // 强制使用 Video 来源
+        let download_source = DownloadSource::Video {
+            url: url.to_string(),
+            format_id,
+        };
+        let protocol_name = download_source.protocol_name();
+
+        info!("添加视频下载任务: {} (格式: {:?})", url, download_source);
+
+        // 确定实际保存路径
+        let actual_save_path = if save_path.as_os_str().is_empty() {
+            self.config.download_dir.clone()
+        } else {
+            save_path
+        };
+
+        // 创建任务
+        let task = DownloadTask::new(download_source.clone(), actual_save_path.clone());
+        let task_id = task.id;
+
+        // 注册任务
+        {
+            let mut tasks = self.tasks.write().await;
+            tasks.insert(task_id, task.clone());
+        }
+
+        // 发送任务添加事件
+        let _ = self.event_tx.send(DownloadEvent::TaskAdded {
+            task_id,
+            name: task.name.clone(),
+        });
+
+        // 根据协议类型选择处理器并开始下载
+        // 视频任务逻辑与 add_task 中的 Video 分支逻辑一致，但这里我们要在内部重新实现
+        // 实际上，与其复制代码，不如让 add_task 内部逻辑复用。
+        // 但为了简单，还是直接调用 start_download_handler 逻辑。
+        // 让我们看看 add_task 是怎么实现的。
+        self.start_download(task_id, download_source, actual_save_path).await?;
+
+        Ok(task_id)
+    }
+
+    /// 启动下载处理逻辑 (内部辅助函数)
+    async fn start_download(
+        &self,
+        task_id: TaskId,
+        download_source: DownloadSource,
+        actual_save_path: PathBuf,
+    ) -> Result<()> {
+        let event_tx = self.event_tx.clone();
+        let tasks = Arc::clone(&self.tasks);
+
+        match &download_source {
+            DownloadSource::Http { .. } => {
+                let handler = Arc::clone(&self.http_handler);
+                tokio::spawn(async move {
+                    // 更新任务状态
+                    {
+                        let mut tasks_guard = tasks.write().await;
+                        if let Some(task) = tasks_guard.get_mut(&task_id) {
+                            task.status = TaskStatus::Downloading;
+                        }
+                    }
+
+                    // 执行下载
+                    if let Err(e) = handler
+                        .start(task_id, &download_source, actual_save_path, event_tx.clone())
+                        .await
+                    {
+                        error!("HTTP 下载失败: {}", e);
+                        let _ = event_tx.send(DownloadEvent::TaskFailed {
+                            task_id,
+                            error: e.to_string(),
+                        });
+                        
+                        let mut tasks_guard = tasks.write().await;
+                        if let Some(task) = tasks_guard.get_mut(&task_id) {
+                            task.status = TaskStatus::Failed {
+                                error: e.to_string(),
+                                retry_count: 0
+                            };
+                        }
+                    }
+                });
+            }
+             DownloadSource::Magnet { .. } | DownloadSource::Torrent { .. } => {
+                let handler = match &self.torrent_handler {
+                    Some(h) => Arc::clone(h),
+                    None => {
+                        return Err(NebulaError::UnsupportedProtocol(
+                            "BitTorrent 未初始化，磁力链接下载不可用".to_string(),
+                        ));
+                    }
+                };
+                tokio::spawn(async move {
+                    // 更新任务状态
+                    {
+                        let mut tasks_guard = tasks.write().await;
+                        if let Some(task) = tasks_guard.get_mut(&task_id) {
+                            task.status = TaskStatus::FetchingMetadata;
+                        }
+                    }
+
+                    // 执行下载
+                    if let Err(e) = handler
+                        .start(task_id, &download_source, actual_save_path, event_tx.clone())
+                        .await
+                    {
+                        error!("BitTorrent 下载失败: {}", e);
+                        let _ = event_tx.send(DownloadEvent::TaskFailed {
+                            task_id,
+                            error: e.to_string(),
+                        });
+
+                        // 更新任务状态
+                        let mut tasks_guard = tasks.write().await;
+                        if let Some(task) = tasks_guard.get_mut(&task_id) {
+                            task.status = TaskStatus::Failed {
+                                error: e.to_string(),
+                                retry_count: 0
+                            };
+                        }
+                    }
+                });
+            }
+            DownloadSource::Video {
+                url,
+                format_id,
+            } => {
+                // 创建临时的 VideoHandler
+                let handler = VideoHandler::new(actual_save_path.clone())?;
+                let url = url.clone();
+                let format_id = format_id.clone();
+                let event_tx_clone = event_tx.clone();
+                
+                tokio::spawn(async move {
+                     // 更新任务状态
+                    {
+                        let mut tasks_guard = tasks.write().await;
+                        if let Some(task) = tasks_guard.get_mut(&task_id) {
+                            task.status = TaskStatus::Downloading;
+                        }
+                    }
+                    
+                    // 创建 mpsc channel 适配 VideoHandler
+                    let (tx, mut rx) = tokio::sync::mpsc::channel(100);
+                    
+                    // 转发事件
+                    let event_tx_clone_2 = event_tx_clone.clone();
+                    tokio::spawn(async move {
+                        while let Some(event) = rx.recv().await {
+                            let _ = event_tx_clone_2.send(event);
+                        }
+                    });
+
+                    if let Err(e) = handler.download_video(
+                        &url,
+                        format_id.as_deref(),
+                        tx,
+                        task_id
+                    ).await {
+                        error!("视频下载失败: {}", e);
+                         let _ = event_tx_clone.send(DownloadEvent::TaskFailed {
+                            task_id,
+                            error: e.to_string(),
+                        });
+                        
+                        let mut tasks_guard = tasks.write().await;
+                        if let Some(task) = tasks_guard.get_mut(&task_id) {
+                            task.status = TaskStatus::Failed {
+                                error: e.to_string(),
+                                retry_count: 0
+                            };
+                        }
+                    }
+                });
+            }
+            _ => {
+                warn!("未实现的协议: {}", download_source.protocol_name());
+            }
+        }
+        
+        Ok(())
+    }
+
     /// 添加下载任务
     ///
     /// 自动识别 URL 类型并选择合适的下载协议
@@ -153,174 +345,11 @@ impl DownloadManager {
             name: task.name.clone(),
         });
 
-        // 根据协议类型选择处理器并开始下载
-        let event_tx = self.event_tx.clone();
-        let tasks = Arc::clone(&self.tasks);
-
-        match &download_source {
-            DownloadSource::Http { .. } => {
-                let handler = Arc::clone(&self.http_handler);
-                tokio::spawn(async move {
-                    // 更新任务状态为下载中
-                    {
-                        let mut tasks_guard = tasks.write().await;
-                        if let Some(task) = tasks_guard.get_mut(&task_id) {
-                            task.mark_started();
-                        }
-                    }
-
-                    // 执行下载
-                    if let Err(e) = handler
-                        .start(task_id, &download_source, actual_save_path, event_tx.clone())
-                        .await
-                    {
-                        error!("HTTP 下载失败: {}", e);
-                        let _ = event_tx.send(DownloadEvent::TaskFailed {
-                            task_id,
-                            error: e.to_string(),
-                        });
-
-                        // 更新任务状态
-                        let mut tasks_guard = tasks.write().await;
-                        if let Some(task) = tasks_guard.get_mut(&task_id) {
-                            task.mark_failed(e.to_string(), 0);
-                        }
-                    } else {
-                        // 更新任务状态为完成
-                        let mut tasks_guard = tasks.write().await;
-                        if let Some(task) = tasks_guard.get_mut(&task_id) {
-                            task.mark_completed();
-                        }
-                    }
-                });
-            }
-            DownloadSource::Magnet { .. } | DownloadSource::Torrent { .. } => {
-                let handler = match &self.torrent_handler {
-                    Some(h) => Arc::clone(h),
-                    None => {
-                        return Err(NebulaError::UnsupportedProtocol(
-                            "BitTorrent 未初始化，磁力链接下载不可用".to_string(),
-                        ));
-                    }
-                };
-                tokio::spawn(async move {
-                    // 更新任务状态
-                    {
-                        let mut tasks_guard = tasks.write().await;
-                        if let Some(task) = tasks_guard.get_mut(&task_id) {
-                            task.status = TaskStatus::FetchingMetadata;
-                        }
-                    }
-
-                    // 执行下载
-                    if let Err(e) = handler
-                        .start(task_id, &download_source, actual_save_path, event_tx.clone())
-                        .await
-                    {
-                        error!("BitTorrent 下载失败: {}", e);
-                        let _ = event_tx.send(DownloadEvent::TaskFailed {
-                            task_id,
-                            error: e.to_string(),
-                        });
-
-                        // 更新任务状态
-                        let mut tasks_guard = tasks.write().await;
-                        if let Some(task) = tasks_guard.get_mut(&task_id) {
-                            task.mark_failed(e.to_string(), 0);
-                        }
-                    }
-                });
-            }
-            DownloadSource::Ftp { .. } => {
-                warn!("暂不支持 FTP 协议");
-                return Err(NebulaError::UnsupportedProtocol("FTP".to_string()));
-            }
-            DownloadSource::Video { url, format_id } => {
-                let download_dir = self.config.download_dir.clone();
-                let url_clone = url.clone();
-                let format_id_clone = format_id.clone();
-                
-                tokio::spawn(async move {
-                    // 创建 VideoHandler
-                    let handler = match VideoHandler::new(download_dir.clone()) {
-                        Ok(h) => h,
-                        Err(e) => {
-                            error!("创建 VideoHandler 失败: {}", e);
-                            let _ = event_tx.send(DownloadEvent::TaskFailed {
-                                task_id,
-                                error: e.to_string(),
-                            });
-                            return;
-                        }
-                    };
-
-                    // 1. 先获取视频信息
-                    info!("获取视频信息: {}", url_clone);
-                    match handler.get_video_info(&url_clone).await {
-                        Ok(video_info) => {
-                            // 发送元数据事件，更新任务名称
-                            let _ = event_tx.send(DownloadEvent::MetadataReceived {
-                                task_id,
-                                name: video_info.title.clone(),
-                                total_size: 0, // 视频大小在下载时才知道
-                                file_count: 1,
-                            });
-
-                            // 更新任务名称
-                            {
-                                let mut tasks_guard = tasks.write().await;
-                                if let Some(task) = tasks_guard.get_mut(&task_id) {
-                                    task.name = video_info.title.clone();
-                                    task.mark_started();
-                                }
-                            }
-
-                            // 2. 开始下载
-                            let (tx, mut rx) = tokio::sync::mpsc::channel(100);
-                            
-                            // 转发事件到 broadcast channel
-                            let event_tx_clone = event_tx.clone();
-                            tokio::spawn(async move {
-                                while let Some(event) = rx.recv().await {
-                                    let _ = event_tx_clone.send(event);
-                                }
-                            });
-
-                            if let Err(e) = handler
-                                .download_video(&url_clone, format_id_clone.as_deref(), tx, task_id)
-                                .await
-                            {
-                                error!("视频下载失败: {}", e);
-                                let _ = event_tx.send(DownloadEvent::TaskFailed {
-                                    task_id,
-                                    error: e.to_string(),
-                                });
-
-                                let mut tasks_guard = tasks.write().await;
-                                if let Some(task) = tasks_guard.get_mut(&task_id) {
-                                    task.mark_failed(e.to_string(), 0);
-                                }
-                            } else {
-                                let mut tasks_guard = tasks.write().await;
-                                if let Some(task) = tasks_guard.get_mut(&task_id) {
-                                    task.mark_completed();
-                                }
-                            }
-                        }
-                        Err(e) => {
-                            error!("获取视频信息失败: {}", e);
-                            let _ = event_tx.send(DownloadEvent::TaskFailed {
-                                task_id,
-                                error: format!("获取视频信息失败: {}", e),
-                            });
-                        }
-                    }
-                });
-            }
-        }
-
+        self.start_download(task_id, download_source, actual_save_path).await?;
+        
         Ok(task_id)
     }
+
 
     /// 暂停下载任务
     pub async fn pause(&self, task_id: TaskId) -> Result<()> {

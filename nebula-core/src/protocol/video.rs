@@ -309,8 +309,10 @@ impl VideoHandler {
         args.push("mp4".to_string());
 
         if let Some(fmt) = format_id {
+            // 用户指定了格式（通常是 video-only）
+            // 自动附加 +bestaudio 以合并音频，如果合并失败则回退到该格式本身
             args.push("-f".to_string());
-            args.push(fmt.to_string());
+            args.push(format!("{}+bestaudio/best", fmt));
         } else {
             // 不指定 -f，让 yt-dlp 自动选择
             // 优先选择 H.264 编码 (兼容性最好)，其次是分辨率
@@ -318,7 +320,7 @@ impl VideoHandler {
             args.push("vcodec:h264,res,acodec:m4a".to_string());
         }
         
-        info!("YT-DLP Arguments (v5-h264): {:?}", args);
+        info!("YT-DLP Arguments (v6-audio-merge): {:?}", args);
 
         args.push(url.to_string());
 

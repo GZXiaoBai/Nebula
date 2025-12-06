@@ -7,6 +7,7 @@ import '../src/rust/api/download.dart';
 import '../theme.dart';
 import '../widgets/drop_zone.dart';
 import '../widgets/task_card.dart';
+import '../widgets/video_info_dialog.dart';
 import 'settings_page.dart';
 
 /// 首页
@@ -170,12 +171,42 @@ class _HomePageState extends State<HomePage> {
   Future<void> _addDownload(String url) async {
     try {
       final settings = context.read<AppSettings>();
-      await addDownload(
-        source: url,
-        savePath: settings.downloadDir,
-      );
+      
+      // 检查链接是否为空
+      if (url.trim().isEmpty) return;
+
+      // 检查是不是视频链接
+      final isVideo = await isVideoUrl(url: url);
+
+      if (isVideo) {
+        // 显示视频信息弹窗
+        // 注意：这里需要 BuildContext，但在 async 之后使用 context 最好检查 mounted
+        if (!mounted) return;
+        
+        final formatId = await showDialog<String>(
+          context: context,
+          builder: (context) => VideoInfoDialog(url: url),
+        );
+        
+        // 如果用户关闭弹窗（返回null），则不进行下载
+        if (formatId == null) return;
+        
+        await addVideoDownload(
+          url: url,
+          savePath: settings.downloadDir,
+          formatId: formatId,
+        );
+      } else {
+        // 普通下载（HTTP/Magnet/Torrent）
+        await addDownload(
+          source: url,
+          savePath: settings.downloadDir,
+        );
+      }
     } catch (e) {
-      _showError(e.toString());
+      if (mounted) {
+        _showError(e.toString());
+      }
     }
   }
 
