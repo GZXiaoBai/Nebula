@@ -1,0 +1,25 @@
+# Rust 构建产物
+/target/
+**/*.rs.bk
+Cargo.lock
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# 测试下载文件
+/downloads/
+*.torrent
+*.part
+
+# 环境变量
+.env
+.env.local

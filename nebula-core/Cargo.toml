@@ -1,0 +1,51 @@
+[package]
+name = "nebula-core"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Nebula 核心下载引擎 - 支持 HTTP 和 BitTorrent 协议"
+
+[dependencies]
+# 异步运行时
+tokio.workspace = true
+
+# BitTorrent 引擎
+librqbit.workspace = true
+
+# HTTP 客户端
+reqwest.workspace = true
+
+# 序列化
+serde.workspace = true
+serde_json.workspace = true
+
+# 错误处理
+thiserror.workspace = true
+anyhow.workspace = true
+
+# 日志
+tracing.workspace = true
+
+# 时间处理
+chrono.workspace = true
+
+# UUID
+uuid.workspace = true
+
+# 异步流
+futures = "0.3"
+tokio-stream = "0.1"
+
+# URL 解析
+url = "2.5"
+
+# 异步 trait
+async-trait = "0.1"
+
+# 用户目录
+dirs = "5.0"
+
+[dev-dependencies]
+tempfile.workspace = true
+tokio-test = "0.4"

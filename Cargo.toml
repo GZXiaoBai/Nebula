@@ -1,0 +1,51 @@
+[workspace]
+resolver = "2"
+members = [
+    "nebula-core",
+    "nebula-cli",
+    "nebula_app/rust",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["Zhou"]
+license = "MIT"
+repository = "https://github.com/user/nebula"
+description = "Nebula - 下一代智能跨平台下载器"
+
+[workspace.dependencies]
+# 异步运行时
+tokio = { version = "1.41", features = ["full"] }
+
+# BitTorrent 引擎 - 使用 git 版本以避免 crates.io 上的依赖冲突
+librqbit = { git = "https://github.com/ikatson/rqbit", branch = "main" }
+
+# HTTP 客户端 - 使用原生 TLS 以支持系统证书
+reqwest = { version = "0.12", features = ["stream", "native-tls"] }
+
+# 序列化
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# 错误处理
+thiserror = "2.0"
+anyhow = "1.0"
+
+# 日志
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# 时间处理
+chrono = { version = "0.4", features = ["serde"] }
+
+# UUID
+uuid = { version = "1.11", features = ["v4", "serde"] }
+
+# 文件系统
+tempfile = "3.14"
+
+# CLI 相关
+clap = { version = "4.5", features = ["derive"] }
+indicatif = "0.17"
+console = "0.15"

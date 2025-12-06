@@ -1,0 +1,202 @@
+name: Build and Release
+
+on:
+  push:
+    branches: [main]
+    tags:
+      - 'v*'
+  pull_request:
+    branches: [main]
+
+env:
+  FLUTTER_VERSION: '3.38.4'
+
+jobs:
+  # ==================== macOS Build ====================
+  build-macos:
+    name: Build macOS
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin,x86_64-apple-darwin
+
+      - name: Install flutter_rust_bridge_codegen
+        run: cargo install flutter_rust_bridge_codegen
+
+      - name: Flutter pub get
+        working-directory: nebula_app
+        run: flutter pub get
+
+      - name: Generate Rust bindings
+        working-directory: nebula_app
+        run: flutter_rust_bridge_codegen generate
+
+      - name: Build macOS Release
+        working-directory: nebula_app
+        run: flutter build macos --release
+
+      - name: Create DMG
+        run: |
+          brew install create-dmg
+          create-dmg \
+            --volname "Nebula" \
+            --window-pos 200 120 \
+            --window-size 600 400 \
+            --icon-size 100 \
+            --icon "nebula_app.app" 150 190 \
+            --app-drop-link 450 190 \
+            --hide-extension "nebula_app.app" \
+            "Nebula-macOS.dmg" \
+            "nebula_app/build/macos/Build/Products/Release/nebula_app.app" || true
+
+      - name: Upload macOS artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nebula-macos
+          path: Nebula-macOS.dmg
+
+  # ==================== Windows Build ====================
+  build-windows:
+    name: Build Windows
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - name: Install flutter_rust_bridge_codegen
+        run: cargo install flutter_rust_bridge_codegen
+
+      - name: Flutter pub get
+        working-directory: nebula_app
+        run: flutter pub get
+
+      - name: Generate Rust bindings
+        working-directory: nebula_app
+        run: flutter_rust_bridge_codegen generate
+
+      - name: Build Windows Release
+        working-directory: nebula_app
+        run: flutter build windows --release
+
+      - name: Create ZIP
+        run: |
+          Compress-Archive -Path "nebula_app\build\windows\x64\runner\Release\*" -DestinationPath "Nebula-Windows.zip"
+
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nebula-windows
+          path: Nebula-Windows.zip
+
+  # ==================== Android Build ====================
+  build-android:
+    name: Build Android
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android,armv7-linux-androideabi,x86_64-linux-android
+
+      - name: Setup Android NDK
+        uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: r26b
+
+      - name: Install cargo-ndk
+        run: cargo install cargo-ndk
+
+      - name: Install flutter_rust_bridge_codegen
+        run: cargo install flutter_rust_bridge_codegen
+
+      - name: Flutter pub get
+        working-directory: nebula_app
+        run: flutter pub get
+
+      - name: Generate Rust bindings
+        working-directory: nebula_app
+        run: flutter_rust_bridge_codegen generate
+
+      - name: Build Android APK
+        working-directory: nebula_app
+        env:
+          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+        run: flutter build apk --release
+
+      - name: Upload Android artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nebula-android
+          path: nebula_app/build/app/outputs/flutter-apk/app-release.apk
+
+  # ==================== Release ====================
+  release:
+    name: Create Release
+    needs: [build-macos, build-windows, build-android]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            artifacts/nebula-macos/Nebula-macOS.dmg
+            artifacts/nebula-windows/Nebula-Windows.zip
+            artifacts/nebula-android/app-release.apk
+          draft: false
+          prerelease: false
+          generate_release_notes: true
