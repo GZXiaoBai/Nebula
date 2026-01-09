@@ -48,6 +48,7 @@ pub enum NebulaEvent {
     TaskResumed { task_id: String },
     TaskRemoved { task_id: String },
     MetadataReceived { task_id: String, name: String, total_size: u64, file_count: usize },
+    PeerUpdate { task_id: String, connected_peers: usize, total_peers: usize },
 }
 
 /// 初始化下载管理器
@@ -211,7 +212,13 @@ pub async fn subscribe_events(sink: StreamSink<NebulaEvent>) -> Result<(), Strin
                         file_count,
                     }
                 }
-                DownloadEvent::PeerUpdate { .. } => continue, // 跳过 Peer 更新事件
+                DownloadEvent::PeerUpdate { task_id, connected_peers, total_peers } => {
+                     NebulaEvent::PeerUpdate {
+                         task_id: task_id.to_string(),
+                         connected_peers,
+                         total_peers,
+                     }
+                }
             };
 
             if sink.add(nebula_event).is_err() {

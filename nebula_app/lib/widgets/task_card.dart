@@ -250,6 +250,17 @@ class _TaskCardState extends State<TaskCard> with SingleTickerProviderStateMixin
                           color: theme.nebulaTextMuted,
                         ),
                       ),
+                    if (widget.task.connectedPeers != null) ...[
+                      const SizedBox(width: NebulaTheme.spacingMd),
+                      Icon(Icons.people_alt_outlined, size: 14, color: theme.nebulaTextMuted),
+                      const SizedBox(width: 4),
+                       Text(
+                        '${widget.task.connectedPeers}/${widget.task.totalPeers ?? 0}',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.nebulaTextMuted,
+                        ),
+                      ),
+                    ],
                     const Spacer(),
                     // 速度和 ETA
                     if (widget.task.status == TaskStatus.downloading && progress != null) ...[

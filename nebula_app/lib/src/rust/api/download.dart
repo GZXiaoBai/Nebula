@@ -173,6 +173,11 @@ sealed class NebulaEvent with _$NebulaEvent {
     required BigInt totalSize,
     required BigInt fileCount,
   }) = NebulaEvent_MetadataReceived;
+  const factory NebulaEvent.peerUpdate({
+    required String taskId,
+    required BigInt connectedPeers,
+    required BigInt totalPeers,
+  }) = NebulaEvent_PeerUpdate;
 }
 
 /// 进度事件（传递给 Dart）

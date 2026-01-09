@@ -712,7 +712,7 @@ extension NebulaEventPatterns on NebulaEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( NebulaEvent_TaskAdded value)?  taskAdded,TResult Function( NebulaEvent_TaskStarted value)?  taskStarted,TResult Function( NebulaEvent_ProgressUpdated value)?  progressUpdated,TResult Function( NebulaEvent_TaskCompleted value)?  taskCompleted,TResult Function( NebulaEvent_TaskFailed value)?  taskFailed,TResult Function( NebulaEvent_TaskPaused value)?  taskPaused,TResult Function( NebulaEvent_TaskResumed value)?  taskResumed,TResult Function( NebulaEvent_TaskRemoved value)?  taskRemoved,TResult Function( NebulaEvent_MetadataReceived value)?  metadataReceived,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( NebulaEvent_TaskAdded value)?  taskAdded,TResult Function( NebulaEvent_TaskStarted value)?  taskStarted,TResult Function( NebulaEvent_ProgressUpdated value)?  progressUpdated,TResult Function( NebulaEvent_TaskCompleted value)?  taskCompleted,TResult Function( NebulaEvent_TaskFailed value)?  taskFailed,TResult Function( NebulaEvent_TaskPaused value)?  taskPaused,TResult Function( NebulaEvent_TaskResumed value)?  taskResumed,TResult Function( NebulaEvent_TaskRemoved value)?  taskRemoved,TResult Function( NebulaEvent_MetadataReceived value)?  metadataReceived,TResult Function( NebulaEvent_PeerUpdate value)?  peerUpdate,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case NebulaEvent_TaskAdded() when taskAdded != null:
@@ -724,7 +724,8 @@ return taskFailed(_that);case NebulaEvent_TaskPaused() when taskPaused != null:
 return taskPaused(_that);case NebulaEvent_TaskResumed() when taskResumed != null:
 return taskResumed(_that);case NebulaEvent_TaskRemoved() when taskRemoved != null:
 return taskRemoved(_that);case NebulaEvent_MetadataReceived() when metadataReceived != null:
-return metadataReceived(_that);case _:
+return metadataReceived(_that);case NebulaEvent_PeerUpdate() when peerUpdate != null:
+return peerUpdate(_that);case _:
   return orElse();
 
 }
@@ -742,7 +743,7 @@ return metadataReceived(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( NebulaEvent_TaskAdded value)  taskAdded,required TResult Function( NebulaEvent_TaskStarted value)  taskStarted,required TResult Function( NebulaEvent_ProgressUpdated value)  progressUpdated,required TResult Function( NebulaEvent_TaskCompleted value)  taskCompleted,required TResult Function( NebulaEvent_TaskFailed value)  taskFailed,required TResult Function( NebulaEvent_TaskPaused value)  taskPaused,required TResult Function( NebulaEvent_TaskResumed value)  taskResumed,required TResult Function( NebulaEvent_TaskRemoved value)  taskRemoved,required TResult Function( NebulaEvent_MetadataReceived value)  metadataReceived,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( NebulaEvent_TaskAdded value)  taskAdded,required TResult Function( NebulaEvent_TaskStarted value)  taskStarted,required TResult Function( NebulaEvent_ProgressUpdated value)  progressUpdated,required TResult Function( NebulaEvent_TaskCompleted value)  taskCompleted,required TResult Function( NebulaEvent_TaskFailed value)  taskFailed,required TResult Function( NebulaEvent_TaskPaused value)  taskPaused,required TResult Function( NebulaEvent_TaskResumed value)  taskResumed,required TResult Function( NebulaEvent_TaskRemoved value)  taskRemoved,required TResult Function( NebulaEvent_MetadataReceived value)  metadataReceived,required TResult Function( NebulaEvent_PeerUpdate value)  peerUpdate,}){
 final _that = this;
 switch (_that) {
 case NebulaEvent_TaskAdded():
@@ -754,7 +755,8 @@ return taskFailed(_that);case NebulaEvent_TaskPaused():
 return taskPaused(_that);case NebulaEvent_TaskResumed():
 return taskResumed(_that);case NebulaEvent_TaskRemoved():
 return taskRemoved(_that);case NebulaEvent_MetadataReceived():
-return metadataReceived(_that);}
+return metadataReceived(_that);case NebulaEvent_PeerUpdate():
+return peerUpdate(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -768,7 +770,7 @@ return metadataReceived(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( NebulaEvent_TaskAdded value)?  taskAdded,TResult? Function( NebulaEvent_TaskStarted value)?  taskStarted,TResult? Function( NebulaEvent_ProgressUpdated value)?  progressUpdated,TResult? Function( NebulaEvent_TaskCompleted value)?  taskCompleted,TResult? Function( NebulaEvent_TaskFailed value)?  taskFailed,TResult? Function( NebulaEvent_TaskPaused value)?  taskPaused,TResult? Function( NebulaEvent_TaskResumed value)?  taskResumed,TResult? Function( NebulaEvent_TaskRemoved value)?  taskRemoved,TResult? Function( NebulaEvent_MetadataReceived value)?  metadataReceived,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( NebulaEvent_TaskAdded value)?  taskAdded,TResult? Function( NebulaEvent_TaskStarted value)?  taskStarted,TResult? Function( NebulaEvent_ProgressUpdated value)?  progressUpdated,TResult? Function( NebulaEvent_TaskCompleted value)?  taskCompleted,TResult? Function( NebulaEvent_TaskFailed value)?  taskFailed,TResult? Function( NebulaEvent_TaskPaused value)?  taskPaused,TResult? Function( NebulaEvent_TaskResumed value)?  taskResumed,TResult? Function( NebulaEvent_TaskRemoved value)?  taskRemoved,TResult? Function( NebulaEvent_MetadataReceived value)?  metadataReceived,TResult? Function( NebulaEvent_PeerUpdate value)?  peerUpdate,}){
 final _that = this;
 switch (_that) {
 case NebulaEvent_TaskAdded() when taskAdded != null:
@@ -780,7 +782,8 @@ return taskFailed(_that);case NebulaEvent_TaskPaused() when taskPaused != null:
 return taskPaused(_that);case NebulaEvent_TaskResumed() when taskResumed != null:
 return taskResumed(_that);case NebulaEvent_TaskRemoved() when taskRemoved != null:
 return taskRemoved(_that);case NebulaEvent_MetadataReceived() when metadataReceived != null:
-return metadataReceived(_that);case _:
+return metadataReceived(_that);case NebulaEvent_PeerUpdate() when peerUpdate != null:
+return peerUpdate(_that);case _:
   return null;
 
 }
@@ -797,7 +800,7 @@ return metadataReceived(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String taskId,  String name,  String? thumbnail)?  taskAdded,TResult Function( String taskId)?  taskStarted,TResult Function( String taskId,  ProgressEvent progress)?  progressUpdated,TResult Function( String taskId)?  taskCompleted,TResult Function( String taskId,  String error)?  taskFailed,TResult Function( String taskId)?  taskPaused,TResult Function( String taskId)?  taskResumed,TResult Function( String taskId)?  taskRemoved,TResult Function( String taskId,  String name,  BigInt totalSize,  BigInt fileCount)?  metadataReceived,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String taskId,  String name,  String? thumbnail)?  taskAdded,TResult Function( String taskId)?  taskStarted,TResult Function( String taskId,  ProgressEvent progress)?  progressUpdated,TResult Function( String taskId)?  taskCompleted,TResult Function( String taskId,  String error)?  taskFailed,TResult Function( String taskId)?  taskPaused,TResult Function( String taskId)?  taskResumed,TResult Function( String taskId)?  taskRemoved,TResult Function( String taskId,  String name,  BigInt totalSize,  BigInt fileCount)?  metadataReceived,TResult Function( String taskId,  BigInt connectedPeers,  BigInt totalPeers)?  peerUpdate,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case NebulaEvent_TaskAdded() when taskAdded != null:
 return taskAdded(_that.taskId,_that.name,_that.thumbnail);case NebulaEvent_TaskStarted() when taskStarted != null:
@@ -808,7 +811,8 @@ return taskFailed(_that.taskId,_that.error);case NebulaEvent_TaskPaused() when t
 return taskPaused(_that.taskId);case NebulaEvent_TaskResumed() when taskResumed != null:
 return taskResumed(_that.taskId);case NebulaEvent_TaskRemoved() when taskRemoved != null:
 return taskRemoved(_that.taskId);case NebulaEvent_MetadataReceived() when metadataReceived != null:
-return metadataReceived(_that.taskId,_that.name,_that.totalSize,_that.fileCount);case _:
+return metadataReceived(_that.taskId,_that.name,_that.totalSize,_that.fileCount);case NebulaEvent_PeerUpdate() when peerUpdate != null:
+return peerUpdate(_that.taskId,_that.connectedPeers,_that.totalPeers);case _:
   return orElse();
 
 }
@@ -826,7 +830,7 @@ return metadataReceived(_that.taskId,_that.name,_that.totalSize,_that.fileCount)
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String taskId,  String name,  String? thumbnail)  taskAdded,required TResult Function( String taskId)  taskStarted,required TResult Function( String taskId,  ProgressEvent progress)  progressUpdated,required TResult Function( String taskId)  taskCompleted,required TResult Function( String taskId,  String error)  taskFailed,required TResult Function( String taskId)  taskPaused,required TResult Function( String taskId)  taskResumed,required TResult Function( String taskId)  taskRemoved,required TResult Function( String taskId,  String name,  BigInt totalSize,  BigInt fileCount)  metadataReceived,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String taskId,  String name,  String? thumbnail)  taskAdded,required TResult Function( String taskId)  taskStarted,required TResult Function( String taskId,  ProgressEvent progress)  progressUpdated,required TResult Function( String taskId)  taskCompleted,required TResult Function( String taskId,  String error)  taskFailed,required TResult Function( String taskId)  taskPaused,required TResult Function( String taskId)  taskResumed,required TResult Function( String taskId)  taskRemoved,required TResult Function( String taskId,  String name,  BigInt totalSize,  BigInt fileCount)  metadataReceived,required TResult Function( String taskId,  BigInt connectedPeers,  BigInt totalPeers)  peerUpdate,}) {final _that = this;
 switch (_that) {
 case NebulaEvent_TaskAdded():
 return taskAdded(_that.taskId,_that.name,_that.thumbnail);case NebulaEvent_TaskStarted():
@@ -837,7 +841,8 @@ return taskFailed(_that.taskId,_that.error);case NebulaEvent_TaskPaused():
 return taskPaused(_that.taskId);case NebulaEvent_TaskResumed():
 return taskResumed(_that.taskId);case NebulaEvent_TaskRemoved():
 return taskRemoved(_that.taskId);case NebulaEvent_MetadataReceived():
-return metadataReceived(_that.taskId,_that.name,_that.totalSize,_that.fileCount);}
+return metadataReceived(_that.taskId,_that.name,_that.totalSize,_that.fileCount);case NebulaEvent_PeerUpdate():
+return peerUpdate(_that.taskId,_that.connectedPeers,_that.totalPeers);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -851,7 +856,7 @@ return metadataReceived(_that.taskId,_that.name,_that.totalSize,_that.fileCount)
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String taskId,  String name,  String? thumbnail)?  taskAdded,TResult? Function( String taskId)?  taskStarted,TResult? Function( String taskId,  ProgressEvent progress)?  progressUpdated,TResult? Function( String taskId)?  taskCompleted,TResult? Function( String taskId,  String error)?  taskFailed,TResult? Function( String taskId)?  taskPaused,TResult? Function( String taskId)?  taskResumed,TResult? Function( String taskId)?  taskRemoved,TResult? Function( String taskId,  String name,  BigInt totalSize,  BigInt fileCount)?  metadataReceived,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String taskId,  String name,  String? thumbnail)?  taskAdded,TResult? Function( String taskId)?  taskStarted,TResult? Function( String taskId,  ProgressEvent progress)?  progressUpdated,TResult? Function( String taskId)?  taskCompleted,TResult? Function( String taskId,  String error)?  taskFailed,TResult? Function( String taskId)?  taskPaused,TResult? Function( String taskId)?  taskResumed,TResult? Function( String taskId)?  taskRemoved,TResult? Function( String taskId,  String name,  BigInt totalSize,  BigInt fileCount)?  metadataReceived,TResult? Function( String taskId,  BigInt connectedPeers,  BigInt totalPeers)?  peerUpdate,}) {final _that = this;
 switch (_that) {
 case NebulaEvent_TaskAdded() when taskAdded != null:
 return taskAdded(_that.taskId,_that.name,_that.thumbnail);case NebulaEvent_TaskStarted() when taskStarted != null:
@@ -862,7 +867,8 @@ return taskFailed(_that.taskId,_that.error);case NebulaEvent_TaskPaused() when t
 return taskPaused(_that.taskId);case NebulaEvent_TaskResumed() when taskResumed != null:
 return taskResumed(_that.taskId);case NebulaEvent_TaskRemoved() when taskRemoved != null:
 return taskRemoved(_that.taskId);case NebulaEvent_MetadataReceived() when metadataReceived != null:
-return metadataReceived(_that.taskId,_that.name,_that.totalSize,_that.fileCount);case _:
+return metadataReceived(_that.taskId,_that.name,_that.totalSize,_that.fileCount);case NebulaEvent_PeerUpdate() when peerUpdate != null:
+return peerUpdate(_that.taskId,_that.connectedPeers,_that.totalPeers);case _:
   return null;
 
 }
@@ -1480,6 +1486,76 @@ taskId: null == taskId ? _self.taskId : taskId // ignore: cast_nullable_to_non_n
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,totalSize: null == totalSize ? _self.totalSize : totalSize // ignore: cast_nullable_to_non_nullable
 as BigInt,fileCount: null == fileCount ? _self.fileCount : fileCount // ignore: cast_nullable_to_non_nullable
+as BigInt,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class NebulaEvent_PeerUpdate extends NebulaEvent {
+  const NebulaEvent_PeerUpdate({required this.taskId, required this.connectedPeers, required this.totalPeers}): super._();
+  
+
+@override final  String taskId;
+ final  BigInt connectedPeers;
+ final  BigInt totalPeers;
+
+/// Create a copy of NebulaEvent
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$NebulaEvent_PeerUpdateCopyWith<NebulaEvent_PeerUpdate> get copyWith => _$NebulaEvent_PeerUpdateCopyWithImpl<NebulaEvent_PeerUpdate>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is NebulaEvent_PeerUpdate&&(identical(other.taskId, taskId) || other.taskId == taskId)&&(identical(other.connectedPeers, connectedPeers) || other.connectedPeers == connectedPeers)&&(identical(other.totalPeers, totalPeers) || other.totalPeers == totalPeers));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,taskId,connectedPeers,totalPeers);
+
+@override
+String toString() {
+  return 'NebulaEvent.peerUpdate(taskId: $taskId, connectedPeers: $connectedPeers, totalPeers: $totalPeers)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $NebulaEvent_PeerUpdateCopyWith<$Res> implements $NebulaEventCopyWith<$Res> {
+  factory $NebulaEvent_PeerUpdateCopyWith(NebulaEvent_PeerUpdate value, $Res Function(NebulaEvent_PeerUpdate) _then) = _$NebulaEvent_PeerUpdateCopyWithImpl;
+@override @useResult
+$Res call({
+ String taskId, BigInt connectedPeers, BigInt totalPeers
+});
+
+
+
+
+}
+/// @nodoc
+class _$NebulaEvent_PeerUpdateCopyWithImpl<$Res>
+    implements $NebulaEvent_PeerUpdateCopyWith<$Res> {
+  _$NebulaEvent_PeerUpdateCopyWithImpl(this._self, this._then);
+
+  final NebulaEvent_PeerUpdate _self;
+  final $Res Function(NebulaEvent_PeerUpdate) _then;
+
+/// Create a copy of NebulaEvent
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? taskId = null,Object? connectedPeers = null,Object? totalPeers = null,}) {
+  return _then(NebulaEvent_PeerUpdate(
+taskId: null == taskId ? _self.taskId : taskId // ignore: cast_nullable_to_non_nullable
+as String,connectedPeers: null == connectedPeers ? _self.connectedPeers : connectedPeers // ignore: cast_nullable_to_non_nullable
+as BigInt,totalPeers: null == totalPeers ? _self.totalPeers : totalPeers // ignore: cast_nullable_to_non_nullable
 as BigInt,
   ));
 }

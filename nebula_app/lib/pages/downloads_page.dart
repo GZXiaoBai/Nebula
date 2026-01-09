@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import '../theme.dart';
 import '../widgets/task_card.dart';
 import '../widgets/video_info_dialog.dart';
-import '../src/rust/api/download.dart';
+import '../src/rust/api/download.dart' as api;
 import '../settings.dart';
 
 /// 下载列表页
@@ -35,7 +35,7 @@ class _DownloadsPageState extends State<DownloadsPage> {
 
     try {
       // 检查是否是视频 URL
-      final isVideo = await isVideoUrl(url: url);
+      final isVideo = await api.isVideoUrl(url: url);
       
       if (isVideo && mounted) {
         // 显示视频信息对话框
@@ -48,7 +48,7 @@ class _DownloadsPageState extends State<DownloadsPage> {
         
         if (result != null && mounted) {
           final savePath = await AppSettings.getDownloadPath();
-          await addVideoDownload(
+          await api.addVideoDownload(
             url: url,
             savePath: savePath,
             formatId: result.formatId,
@@ -59,7 +59,7 @@ class _DownloadsPageState extends State<DownloadsPage> {
       } else {
         // 普通下载
         final savePath = await AppSettings.getDownloadPath();
-        await addDownload(source: url, savePath: savePath);
+        await api.addDownload(source: url, savePath: savePath);
       }
 
       _urlController.clear();
@@ -157,8 +157,8 @@ class _DownloadsPageState extends State<DownloadsPage> {
                         ? IconButton(
                             icon: const Icon(Icons.clear_rounded),
                             onPressed: () {
-                              _urlController.clear();
-                              setState(() {});
+                                _urlController.clear();
+                                setState(() {});
                             },
                           )
                         : null,
@@ -233,9 +233,9 @@ class _DownloadsPageState extends State<DownloadsPage> {
           padding: const EdgeInsets.only(bottom: NebulaTheme.spacingMd),
           child: TaskCard(
             task: task,
-            onPause: () => pauseDownload(taskId: task.id),
-            onResume: () => resumeDownload(taskId: task.id),
-            onCancel: () => cancelDownload(taskId: task.id, deleteFiles: true),
+            onPause: () => api.pauseDownload(taskId: task.id),
+            onResume: () => api.resumeDownload(taskId: task.id),
+            onCancel: () => api.cancelDownload(taskId: task.id, deleteFiles: true),
           ),
         );
       },

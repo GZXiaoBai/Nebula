@@ -856,6 +856,16 @@ impl SseDecode for crate::api::download::NebulaEvent {
                     file_count: var_fileCount,
                 };
             }
+            9 => {
+                let mut var_taskId = <String>::sse_decode(deserializer);
+                let mut var_connectedPeers = <usize>::sse_decode(deserializer);
+                let mut var_totalPeers = <usize>::sse_decode(deserializer);
+                return crate::api::download::NebulaEvent::PeerUpdate {
+                    task_id: var_taskId,
+                    connected_peers: var_connectedPeers,
+                    total_peers: var_totalPeers,
+                };
+            }
             _ => {
                 unimplemented!("");
             }
@@ -1160,6 +1170,17 @@ impl flutter_rust_bridge::IntoDart for crate::api::download::NebulaEvent {
                 file_count.into_into_dart().into_dart(),
             ]
             .into_dart(),
+            crate::api::download::NebulaEvent::PeerUpdate {
+                task_id,
+                connected_peers,
+                total_peers,
+            } => [
+                9.into_dart(),
+                task_id.into_into_dart().into_dart(),
+                connected_peers.into_into_dart().into_dart(),
+                total_peers.into_into_dart().into_dart(),
+            ]
+            .into_dart(),
             _ => {
                 unimplemented!("");
             }
@@ -1402,6 +1423,16 @@ impl SseEncode for crate::api::download::NebulaEvent {
                 <String>::sse_encode(name, serializer);
                 <u64>::sse_encode(total_size, serializer);
                 <usize>::sse_encode(file_count, serializer);
+            }
+            crate::api::download::NebulaEvent::PeerUpdate {
+                task_id,
+                connected_peers,
+                total_peers,
+            } => {
+                <i32>::sse_encode(9, serializer);
+                <String>::sse_encode(task_id, serializer);
+                <usize>::sse_encode(connected_peers, serializer);
+                <usize>::sse_encode(total_peers, serializer);
             }
             _ => {
                 unimplemented!("");

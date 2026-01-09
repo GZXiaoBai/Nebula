@@ -37,7 +37,12 @@ class DownloadTaskInfo {
     this.completedAt,
     this.savePath,
     this.thumbnail,
+    this.connectedPeers,
+    this.totalPeers,
   });
+
+  int? connectedPeers;
+  int? totalPeers;
 }
 
 class DownloadProvider extends ChangeNotifier {
@@ -141,6 +146,14 @@ class DownloadProvider extends ChangeNotifier {
            _tasks.remove(taskId);
            notifyListeners();
         }
+
+
+       case NebulaEvent_PeerUpdate(:final taskId, :final connectedPeers, :final totalPeers):
+         if (_tasks.containsKey(taskId)) {
+           _tasks[taskId]!.connectedPeers = connectedPeers.toInt();
+           _tasks[taskId]!.totalPeers = totalPeers.toInt();
+           notifyListeners();
+         }
     }
   }
 

@@ -789,6 +789,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           totalSize: dco_decode_u_64(raw[3]),
           fileCount: dco_decode_usize(raw[4]),
         );
+      case 9:
+        return NebulaEvent_PeerUpdate(
+          taskId: dco_decode_String(raw[1]),
+          connectedPeers: dco_decode_usize(raw[2]),
+          totalPeers: dco_decode_usize(raw[3]),
+        );
       default:
         throw Exception("unreachable");
     }
@@ -1042,6 +1048,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           name: var_name,
           totalSize: var_totalSize,
           fileCount: var_fileCount,
+        );
+      case 9:
+        var var_taskId = sse_decode_String(deserializer);
+        var var_connectedPeers = sse_decode_usize(deserializer);
+        var var_totalPeers = sse_decode_usize(deserializer);
+        return NebulaEvent_PeerUpdate(
+          taskId: var_taskId,
+          connectedPeers: var_connectedPeers,
+          totalPeers: var_totalPeers,
         );
       default:
         throw UnimplementedError('');
@@ -1339,6 +1354,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_String(name, serializer);
         sse_encode_u_64(totalSize, serializer);
         sse_encode_usize(fileCount, serializer);
+      case NebulaEvent_PeerUpdate(
+        taskId: final taskId,
+        connectedPeers: final connectedPeers,
+        totalPeers: final totalPeers,
+      ):
+        sse_encode_i_32(9, serializer);
+        sse_encode_String(taskId, serializer);
+        sse_encode_usize(connectedPeers, serializer);
+        sse_encode_usize(totalPeers, serializer);
     }
   }
 
