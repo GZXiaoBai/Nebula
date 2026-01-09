@@ -275,3 +275,78 @@ pub async fn get_video_info(url: String) -> Result<VideoInfo, String> {
             .collect(),
     })
 }
+
+// ===== Bilibili 登录相关 API =====
+
+/// Bilibili 二维码数据
+#[frb(dart_metadata = ("freezed"))]
+pub struct BilibiliQrCode {
+    /// 二维码 URL (用于展示)
+    pub url: String,
+    /// 二维码 key (用于轮询状态)
+    pub qrcode_key: String,
+}
+
+/// Bilibili 登录状态
+#[frb(dart_metadata = ("freezed"))]
+pub enum BilibiliLoginStatus {
+    /// 等待扫描
+    WaitingScan,
+    /// 已扫描待确认
+    WaitingConfirm,
+    /// 登录成功
+    Success,
+    /// 二维码已过期
+    Expired,
+    /// 登录失败
+    Failed { error: String },
+}
+
+/// 生成 Bilibili 登录二维码
+#[frb]
+pub async fn generate_bilibili_qrcode(data_dir: String) -> Result<BilibiliQrCode, String> {
+    use nebula_core::protocol::bilibili::BilibiliAuth;
+    
+    let auth = BilibiliAuth::new(PathBuf::from(data_dir));
+    let qr = auth.generate_qrcode().await.map_err(|e| e.to_string())?;
+    
+    Ok(BilibiliQrCode {
+        url: qr.url,
+        qrcode_key: qr.qrcode_key,
+    })
+}
+
+/// 轮询 Bilibili 扫码登录状态
+#[frb]
+pub async fn poll_bilibili_login(data_dir: String, qrcode_key: String) -> Result<BilibiliLoginStatus, String> {
+    use nebula_core::protocol::bilibili::{BilibiliAuth, LoginStatus};
+    
+    let auth = BilibiliAuth::new(PathBuf::from(data_dir));
+    let status = auth.poll_qrcode_status(&qrcode_key).await.map_err(|e| e.to_string())?;
+    
+    Ok(match status {
+        LoginStatus::WaitingScan => BilibiliLoginStatus::WaitingScan,
+        LoginStatus::WaitingConfirm => BilibiliLoginStatus::WaitingConfirm,
+        LoginStatus::Success => BilibiliLoginStatus::Success,
+        LoginStatus::Expired => BilibiliLoginStatus::Expired,
+        LoginStatus::Failed(err) => BilibiliLoginStatus::Failed { error: err },
+    })
+}
+
+/// 检查 Bilibili 是否已登录
+#[frb]
+pub async fn is_bilibili_logged_in(data_dir: String) -> bool {
+    use nebula_core::protocol::bilibili::BilibiliAuth;
+    
+    let auth = BilibiliAuth::new(PathBuf::from(data_dir));
+    auth.is_logged_in().await
+}
+
+/// 注销 Bilibili 账号
+#[frb]
+pub async fn logout_bilibili(data_dir: String) -> Result<(), String> {
+    use nebula_core::protocol::bilibili::BilibiliAuth;
+    
+    let auth = BilibiliAuth::new(PathBuf::from(data_dir));
+    auth.logout().await.map_err(|e| e.to_string())
+}

@@ -47,6 +47,7 @@ pub mod event;
 pub mod manager;
 pub mod protocol;
 pub mod task;
+pub mod trackers;
 
 // 重新导出常用类型，方便外部使用
 pub use config::ManagerConfig;

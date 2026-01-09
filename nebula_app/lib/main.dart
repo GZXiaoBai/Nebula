@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'models/settings.dart';
-import 'pages/home_page.dart';
+import 'models/settings.dart' as old_settings;
+import 'pages/main_shell.dart';
 import 'src/rust/frb_generated.dart';
 import 'theme.dart';
 
@@ -18,12 +18,14 @@ class NebulaApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => AppSettings(),
+      create: (_) => old_settings.AppSettings(),
       child: MaterialApp(
         title: 'Nebula',
         debugShowCheckedModeBanner: false,
-        theme: NebulaTheme.darkTheme,
-        home: const HomePage(),
+        theme: NebulaTheme.lightTheme,
+        darkTheme: NebulaTheme.darkTheme,
+        themeMode: ThemeMode.dark, // 默认深色模式
+        home: const MainShell(),
       ),
     );
   }

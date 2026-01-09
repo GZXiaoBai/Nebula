@@ -42,6 +42,8 @@ pub struct TorrentHandler {
     config: TorrentConfig,
     /// 任务映射：TaskId -> TorrentTask
     tasks: Arc<RwLock<HashMap<TaskId, TorrentTask>>>,
+    /// Tracker 列表（初始化时获取）
+    trackers: Vec<String>,
 }
 
 impl TorrentHandler {
@@ -53,6 +55,11 @@ impl TorrentHandler {
     pub async fn new(config: TorrentConfig, data_dir: PathBuf) -> Result<Self> {
         // 确保数据目录存在
         tokio::fs::create_dir_all(&data_dir).await?;
+
+        // 获取远程 Tracker 列表
+        let tracker_manager = crate::trackers::TrackerManager::new(data_dir.clone());
+        let trackers = tracker_manager.get_trackers().await;
+        info!("已加载 {} 个 Tracker", trackers.len());
 
         // 构建 Session 配置
         let session_opts = SessionOptions {
@@ -72,6 +79,7 @@ impl TorrentHandler {
             session,
             config,
             tasks: Arc::new(RwLock::new(HashMap::new())),
+            trackers,
         })
     }
 
@@ -83,10 +91,15 @@ impl TorrentHandler {
         save_path: PathBuf,
         event_tx: broadcast::Sender<DownloadEvent>,
     ) -> Result<()> {
-        // 构建添加选项
+        // 构建添加选项，附加远程 Tracker 列表
         let add_opts = AddTorrentOptions {
             output_folder: Some(save_path.to_string_lossy().to_string()),
             overwrite: true,
+            trackers: if self.trackers.is_empty() {
+                None
+            } else {
+                Some(self.trackers.clone())
+            },
             ..Default::default()
         };
 

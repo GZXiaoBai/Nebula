@@ -276,14 +276,22 @@ impl VideoHandler {
     }
 
     /// 下载视频
+    ///
+    /// # 参数
+    /// - `url`: 视频 URL
+    /// - `format_id`: 可选的格式 ID
+    /// - `cookies_path`: 可选的 cookies 文件路径（用于登录态下载高码率）
+    /// - `event_tx`: 事件发送通道
+    /// - `task_id`: 任务 ID
     pub async fn download_video(
         &self,
         url: &str,
         format_id: Option<&str>,
+        cookies_path: Option<&PathBuf>,
         event_tx: mpsc::Sender<DownloadEvent>,
         task_id: TaskId,
     ) -> Result<PathBuf> {
-        info!("开始下载视频: {} (format: {:?})", url, format_id);
+        info!("开始下载视频: {} (format: {:?}, cookies: {:?})", url, format_id, cookies_path.is_some());
 
         let output_template = self
             .output_dir
@@ -298,6 +306,15 @@ impl VideoHandler {
             "-o".to_string(),
             output_template,
         ];
+
+        // 如果有 cookies 文件，添加 --cookies 参数
+        if let Some(cookie_file) = cookies_path {
+            if cookie_file.exists() {
+                args.push("--cookies".to_string());
+                args.push(cookie_file.to_string_lossy().to_string());
+                info!("使用 cookies 文件: {:?}", cookie_file);
+            }
+        }
 
         // 显式指定 ffmpeg 路径
         if let Some(ffmpeg_path) = Self::find_ffmpeg() {
@@ -320,7 +337,7 @@ impl VideoHandler {
             args.push("vcodec:h264,res,acodec:m4a".to_string());
         }
         
-        info!("YT-DLP Arguments (v6-audio-merge): {:?}", args);
+        info!("YT-DLP Arguments (v7-cookies): {:?}", args);
 
         args.push(url.to_string());
 

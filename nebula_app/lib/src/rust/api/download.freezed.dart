@@ -12,6 +12,632 @@ part of 'download.dart';
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
+mixin _$BilibiliLoginStatus {
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BilibiliLoginStatus);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'BilibiliLoginStatus()';
+}
+
+
+}
+
+/// @nodoc
+class $BilibiliLoginStatusCopyWith<$Res>  {
+$BilibiliLoginStatusCopyWith(BilibiliLoginStatus _, $Res Function(BilibiliLoginStatus) __);
+}
+
+
+/// Adds pattern-matching-related methods to [BilibiliLoginStatus].
+extension BilibiliLoginStatusPatterns on BilibiliLoginStatus {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( BilibiliLoginStatus_WaitingScan value)?  waitingScan,TResult Function( BilibiliLoginStatus_WaitingConfirm value)?  waitingConfirm,TResult Function( BilibiliLoginStatus_Success value)?  success,TResult Function( BilibiliLoginStatus_Expired value)?  expired,TResult Function( BilibiliLoginStatus_Failed value)?  failed,required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case BilibiliLoginStatus_WaitingScan() when waitingScan != null:
+return waitingScan(_that);case BilibiliLoginStatus_WaitingConfirm() when waitingConfirm != null:
+return waitingConfirm(_that);case BilibiliLoginStatus_Success() when success != null:
+return success(_that);case BilibiliLoginStatus_Expired() when expired != null:
+return expired(_that);case BilibiliLoginStatus_Failed() when failed != null:
+return failed(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( BilibiliLoginStatus_WaitingScan value)  waitingScan,required TResult Function( BilibiliLoginStatus_WaitingConfirm value)  waitingConfirm,required TResult Function( BilibiliLoginStatus_Success value)  success,required TResult Function( BilibiliLoginStatus_Expired value)  expired,required TResult Function( BilibiliLoginStatus_Failed value)  failed,}){
+final _that = this;
+switch (_that) {
+case BilibiliLoginStatus_WaitingScan():
+return waitingScan(_that);case BilibiliLoginStatus_WaitingConfirm():
+return waitingConfirm(_that);case BilibiliLoginStatus_Success():
+return success(_that);case BilibiliLoginStatus_Expired():
+return expired(_that);case BilibiliLoginStatus_Failed():
+return failed(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( BilibiliLoginStatus_WaitingScan value)?  waitingScan,TResult? Function( BilibiliLoginStatus_WaitingConfirm value)?  waitingConfirm,TResult? Function( BilibiliLoginStatus_Success value)?  success,TResult? Function( BilibiliLoginStatus_Expired value)?  expired,TResult? Function( BilibiliLoginStatus_Failed value)?  failed,}){
+final _that = this;
+switch (_that) {
+case BilibiliLoginStatus_WaitingScan() when waitingScan != null:
+return waitingScan(_that);case BilibiliLoginStatus_WaitingConfirm() when waitingConfirm != null:
+return waitingConfirm(_that);case BilibiliLoginStatus_Success() when success != null:
+return success(_that);case BilibiliLoginStatus_Expired() when expired != null:
+return expired(_that);case BilibiliLoginStatus_Failed() when failed != null:
+return failed(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  waitingScan,TResult Function()?  waitingConfirm,TResult Function()?  success,TResult Function()?  expired,TResult Function( String error)?  failed,required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case BilibiliLoginStatus_WaitingScan() when waitingScan != null:
+return waitingScan();case BilibiliLoginStatus_WaitingConfirm() when waitingConfirm != null:
+return waitingConfirm();case BilibiliLoginStatus_Success() when success != null:
+return success();case BilibiliLoginStatus_Expired() when expired != null:
+return expired();case BilibiliLoginStatus_Failed() when failed != null:
+return failed(_that.error);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  waitingScan,required TResult Function()  waitingConfirm,required TResult Function()  success,required TResult Function()  expired,required TResult Function( String error)  failed,}) {final _that = this;
+switch (_that) {
+case BilibiliLoginStatus_WaitingScan():
+return waitingScan();case BilibiliLoginStatus_WaitingConfirm():
+return waitingConfirm();case BilibiliLoginStatus_Success():
+return success();case BilibiliLoginStatus_Expired():
+return expired();case BilibiliLoginStatus_Failed():
+return failed(_that.error);}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  waitingScan,TResult? Function()?  waitingConfirm,TResult? Function()?  success,TResult? Function()?  expired,TResult? Function( String error)?  failed,}) {final _that = this;
+switch (_that) {
+case BilibiliLoginStatus_WaitingScan() when waitingScan != null:
+return waitingScan();case BilibiliLoginStatus_WaitingConfirm() when waitingConfirm != null:
+return waitingConfirm();case BilibiliLoginStatus_Success() when success != null:
+return success();case BilibiliLoginStatus_Expired() when expired != null:
+return expired();case BilibiliLoginStatus_Failed() when failed != null:
+return failed(_that.error);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class BilibiliLoginStatus_WaitingScan extends BilibiliLoginStatus {
+  const BilibiliLoginStatus_WaitingScan(): super._();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BilibiliLoginStatus_WaitingScan);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'BilibiliLoginStatus.waitingScan()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class BilibiliLoginStatus_WaitingConfirm extends BilibiliLoginStatus {
+  const BilibiliLoginStatus_WaitingConfirm(): super._();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BilibiliLoginStatus_WaitingConfirm);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'BilibiliLoginStatus.waitingConfirm()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class BilibiliLoginStatus_Success extends BilibiliLoginStatus {
+  const BilibiliLoginStatus_Success(): super._();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BilibiliLoginStatus_Success);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'BilibiliLoginStatus.success()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class BilibiliLoginStatus_Expired extends BilibiliLoginStatus {
+  const BilibiliLoginStatus_Expired(): super._();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BilibiliLoginStatus_Expired);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'BilibiliLoginStatus.expired()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class BilibiliLoginStatus_Failed extends BilibiliLoginStatus {
+  const BilibiliLoginStatus_Failed({required this.error}): super._();
+  
+
+ final  String error;
+
+/// Create a copy of BilibiliLoginStatus
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$BilibiliLoginStatus_FailedCopyWith<BilibiliLoginStatus_Failed> get copyWith => _$BilibiliLoginStatus_FailedCopyWithImpl<BilibiliLoginStatus_Failed>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BilibiliLoginStatus_Failed&&(identical(other.error, error) || other.error == error));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,error);
+
+@override
+String toString() {
+  return 'BilibiliLoginStatus.failed(error: $error)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $BilibiliLoginStatus_FailedCopyWith<$Res> implements $BilibiliLoginStatusCopyWith<$Res> {
+  factory $BilibiliLoginStatus_FailedCopyWith(BilibiliLoginStatus_Failed value, $Res Function(BilibiliLoginStatus_Failed) _then) = _$BilibiliLoginStatus_FailedCopyWithImpl;
+@useResult
+$Res call({
+ String error
+});
+
+
+
+
+}
+/// @nodoc
+class _$BilibiliLoginStatus_FailedCopyWithImpl<$Res>
+    implements $BilibiliLoginStatus_FailedCopyWith<$Res> {
+  _$BilibiliLoginStatus_FailedCopyWithImpl(this._self, this._then);
+
+  final BilibiliLoginStatus_Failed _self;
+  final $Res Function(BilibiliLoginStatus_Failed) _then;
+
+/// Create a copy of BilibiliLoginStatus
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? error = null,}) {
+  return _then(BilibiliLoginStatus_Failed(
+error: null == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+mixin _$BilibiliQrCode {
+
+ String get url; String get qrcodeKey;
+/// Create a copy of BilibiliQrCode
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$BilibiliQrCodeCopyWith<BilibiliQrCode> get copyWith => _$BilibiliQrCodeCopyWithImpl<BilibiliQrCode>(this as BilibiliQrCode, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BilibiliQrCode&&(identical(other.url, url) || other.url == url)&&(identical(other.qrcodeKey, qrcodeKey) || other.qrcodeKey == qrcodeKey));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,url,qrcodeKey);
+
+@override
+String toString() {
+  return 'BilibiliQrCode(url: $url, qrcodeKey: $qrcodeKey)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $BilibiliQrCodeCopyWith<$Res>  {
+  factory $BilibiliQrCodeCopyWith(BilibiliQrCode value, $Res Function(BilibiliQrCode) _then) = _$BilibiliQrCodeCopyWithImpl;
+@useResult
+$Res call({
+ String url, String qrcodeKey
+});
+
+
+
+
+}
+/// @nodoc
+class _$BilibiliQrCodeCopyWithImpl<$Res>
+    implements $BilibiliQrCodeCopyWith<$Res> {
+  _$BilibiliQrCodeCopyWithImpl(this._self, this._then);
+
+  final BilibiliQrCode _self;
+  final $Res Function(BilibiliQrCode) _then;
+
+/// Create a copy of BilibiliQrCode
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? url = null,Object? qrcodeKey = null,}) {
+  return _then(_self.copyWith(
+url: null == url ? _self.url : url // ignore: cast_nullable_to_non_nullable
+as String,qrcodeKey: null == qrcodeKey ? _self.qrcodeKey : qrcodeKey // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [BilibiliQrCode].
+extension BilibiliQrCodePatterns on BilibiliQrCode {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _BilibiliQrCode value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _BilibiliQrCode() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _BilibiliQrCode value)  $default,){
+final _that = this;
+switch (_that) {
+case _BilibiliQrCode():
+return $default(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _BilibiliQrCode value)?  $default,){
+final _that = this;
+switch (_that) {
+case _BilibiliQrCode() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String url,  String qrcodeKey)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _BilibiliQrCode() when $default != null:
+return $default(_that.url,_that.qrcodeKey);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String url,  String qrcodeKey)  $default,) {final _that = this;
+switch (_that) {
+case _BilibiliQrCode():
+return $default(_that.url,_that.qrcodeKey);}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String url,  String qrcodeKey)?  $default,) {final _that = this;
+switch (_that) {
+case _BilibiliQrCode() when $default != null:
+return $default(_that.url,_that.qrcodeKey);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class _BilibiliQrCode implements BilibiliQrCode {
+  const _BilibiliQrCode({required this.url, required this.qrcodeKey});
+  
+
+@override final  String url;
+@override final  String qrcodeKey;
+
+/// Create a copy of BilibiliQrCode
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$BilibiliQrCodeCopyWith<_BilibiliQrCode> get copyWith => __$BilibiliQrCodeCopyWithImpl<_BilibiliQrCode>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _BilibiliQrCode&&(identical(other.url, url) || other.url == url)&&(identical(other.qrcodeKey, qrcodeKey) || other.qrcodeKey == qrcodeKey));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,url,qrcodeKey);
+
+@override
+String toString() {
+  return 'BilibiliQrCode(url: $url, qrcodeKey: $qrcodeKey)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$BilibiliQrCodeCopyWith<$Res> implements $BilibiliQrCodeCopyWith<$Res> {
+  factory _$BilibiliQrCodeCopyWith(_BilibiliQrCode value, $Res Function(_BilibiliQrCode) _then) = __$BilibiliQrCodeCopyWithImpl;
+@override @useResult
+$Res call({
+ String url, String qrcodeKey
+});
+
+
+
+
+}
+/// @nodoc
+class __$BilibiliQrCodeCopyWithImpl<$Res>
+    implements _$BilibiliQrCodeCopyWith<$Res> {
+  __$BilibiliQrCodeCopyWithImpl(this._self, this._then);
+
+  final _BilibiliQrCode _self;
+  final $Res Function(_BilibiliQrCode) _then;
+
+/// Create a copy of BilibiliQrCode
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? url = null,Object? qrcodeKey = null,}) {
+  return _then(_BilibiliQrCode(
+url: null == url ? _self.url : url // ignore: cast_nullable_to_non_nullable
+as String,qrcodeKey: null == qrcodeKey ? _self.qrcodeKey : qrcodeKey // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
 mixin _$NebulaEvent {
 
  String get taskId;

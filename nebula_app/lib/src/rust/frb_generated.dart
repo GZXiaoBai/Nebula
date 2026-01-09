@@ -67,7 +67,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.11.1';
 
   @override
-  int get rustContentHash => -665692884;
+  int get rustContentHash => -554484649;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -94,6 +94,10 @@ abstract class RustLibApi extends BaseApi {
     required bool deleteFiles,
   });
 
+  Future<BilibiliQrCode> crateApiDownloadGenerateBilibiliQrcode({
+    required String dataDir,
+  });
+
   Future<VideoInfo> crateApiDownloadGetVideoInfo({required String url});
 
   String crateApiSimpleGreet({required String name});
@@ -104,9 +108,18 @@ abstract class RustLibApi extends BaseApi {
     required String downloadDir,
   });
 
+  Future<bool> crateApiDownloadIsBilibiliLoggedIn({required String dataDir});
+
   Future<bool> crateApiDownloadIsVideoUrl({required String url});
 
+  Future<void> crateApiDownloadLogoutBilibili({required String dataDir});
+
   Future<void> crateApiDownloadPauseDownload({required String taskId});
+
+  Future<BilibiliLoginStatus> crateApiDownloadPollBilibiliLogin({
+    required String dataDir,
+    required String qrcodeKey,
+  });
 
   Future<void> crateApiDownloadResumeDownload({required String taskId});
 
@@ -229,6 +242,39 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
+  Future<BilibiliQrCode> crateApiDownloadGenerateBilibiliQrcode({
+    required String dataDir,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(dataDir, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 4,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_bilibili_qr_code,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiDownloadGenerateBilibiliQrcodeConstMeta,
+        argValues: [dataDir],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiDownloadGenerateBilibiliQrcodeConstMeta =>
+      const TaskConstMeta(
+        debugName: "generate_bilibili_qrcode",
+        argNames: ["dataDir"],
+      );
+
+  @override
   Future<VideoInfo> crateApiDownloadGetVideoInfo({required String url}) {
     return handler.executeNormal(
       NormalTask(
@@ -238,7 +284,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 4,
+            funcId: 5,
             port: port_,
           );
         },
@@ -263,7 +309,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_String(name, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 5)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 6)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_String,
@@ -288,7 +334,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 6,
+            funcId: 7,
             port: port_,
           );
         },
@@ -318,7 +364,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 7,
+            funcId: 8,
             port: port_,
           );
         },
@@ -340,6 +386,37 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
+  Future<bool> crateApiDownloadIsBilibiliLoggedIn({required String dataDir}) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(dataDir, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 9,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_bool,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiDownloadIsBilibiliLoggedInConstMeta,
+        argValues: [dataDir],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiDownloadIsBilibiliLoggedInConstMeta =>
+      const TaskConstMeta(
+        debugName: "is_bilibili_logged_in",
+        argNames: ["dataDir"],
+      );
+
+  @override
   Future<bool> crateApiDownloadIsVideoUrl({required String url}) {
     return handler.executeNormal(
       NormalTask(
@@ -349,7 +426,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 8,
+            funcId: 10,
             port: port_,
           );
         },
@@ -368,6 +445,34 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "is_video_url", argNames: ["url"]);
 
   @override
+  Future<void> crateApiDownloadLogoutBilibili({required String dataDir}) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(dataDir, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 11,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiDownloadLogoutBilibiliConstMeta,
+        argValues: [dataDir],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiDownloadLogoutBilibiliConstMeta =>
+      const TaskConstMeta(debugName: "logout_bilibili", argNames: ["dataDir"]);
+
+  @override
   Future<void> crateApiDownloadPauseDownload({required String taskId}) {
     return handler.executeNormal(
       NormalTask(
@@ -377,7 +482,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 9,
+            funcId: 12,
             port: port_,
           );
         },
@@ -396,6 +501,41 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       const TaskConstMeta(debugName: "pause_download", argNames: ["taskId"]);
 
   @override
+  Future<BilibiliLoginStatus> crateApiDownloadPollBilibiliLogin({
+    required String dataDir,
+    required String qrcodeKey,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(dataDir, serializer);
+          sse_encode_String(qrcodeKey, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 13,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_bilibili_login_status,
+          decodeErrorData: sse_decode_String,
+        ),
+        constMeta: kCrateApiDownloadPollBilibiliLoginConstMeta,
+        argValues: [dataDir, qrcodeKey],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiDownloadPollBilibiliLoginConstMeta =>
+      const TaskConstMeta(
+        debugName: "poll_bilibili_login",
+        argNames: ["dataDir", "qrcodeKey"],
+      );
+
+  @override
   Future<void> crateApiDownloadResumeDownload({required String taskId}) {
     return handler.executeNormal(
       NormalTask(
@@ -405,7 +545,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 10,
+            funcId: 14,
             port: port_,
           );
         },
@@ -434,7 +574,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 11,
+            funcId: 15,
             port: port_,
           );
         },
@@ -471,6 +611,37 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   String dco_decode_String(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw as String;
+  }
+
+  @protected
+  BilibiliLoginStatus dco_decode_bilibili_login_status(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    switch (raw[0]) {
+      case 0:
+        return BilibiliLoginStatus_WaitingScan();
+      case 1:
+        return BilibiliLoginStatus_WaitingConfirm();
+      case 2:
+        return BilibiliLoginStatus_Success();
+      case 3:
+        return BilibiliLoginStatus_Expired();
+      case 4:
+        return BilibiliLoginStatus_Failed(error: dco_decode_String(raw[1]));
+      default:
+        throw Exception("unreachable");
+    }
+  }
+
+  @protected
+  BilibiliQrCode dco_decode_bilibili_qr_code(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    return BilibiliQrCode(
+      url: dco_decode_String(arr[0]),
+      qrcodeKey: dco_decode_String(arr[1]),
+    );
   }
 
   @protected
@@ -653,6 +824,38 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var inner = sse_decode_list_prim_u_8_strict(deserializer);
     return utf8.decoder.convert(inner);
+  }
+
+  @protected
+  BilibiliLoginStatus sse_decode_bilibili_login_status(
+    SseDeserializer deserializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    var tag_ = sse_decode_i_32(deserializer);
+    switch (tag_) {
+      case 0:
+        return BilibiliLoginStatus_WaitingScan();
+      case 1:
+        return BilibiliLoginStatus_WaitingConfirm();
+      case 2:
+        return BilibiliLoginStatus_Success();
+      case 3:
+        return BilibiliLoginStatus_Expired();
+      case 4:
+        var var_error = sse_decode_String(deserializer);
+        return BilibiliLoginStatus_Failed(error: var_error);
+      default:
+        throw UnimplementedError('');
+    }
+  }
+
+  @protected
+  BilibiliQrCode sse_decode_bilibili_qr_code(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_url = sse_decode_String(deserializer);
+    var var_qrcodeKey = sse_decode_String(deserializer);
+    return BilibiliQrCode(url: var_url, qrcodeKey: var_qrcodeKey);
   }
 
   @protected
@@ -888,6 +1091,37 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   void sse_encode_String(String self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_list_prim_u_8_strict(utf8.encoder.convert(self), serializer);
+  }
+
+  @protected
+  void sse_encode_bilibili_login_status(
+    BilibiliLoginStatus self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    switch (self) {
+      case BilibiliLoginStatus_WaitingScan():
+        sse_encode_i_32(0, serializer);
+      case BilibiliLoginStatus_WaitingConfirm():
+        sse_encode_i_32(1, serializer);
+      case BilibiliLoginStatus_Success():
+        sse_encode_i_32(2, serializer);
+      case BilibiliLoginStatus_Expired():
+        sse_encode_i_32(3, serializer);
+      case BilibiliLoginStatus_Failed(error: final error):
+        sse_encode_i_32(4, serializer);
+        sse_encode_String(error, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_bilibili_qr_code(
+    BilibiliQrCode self,
+    SseSerializer serializer,
+  ) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_String(self.url, serializer);
+    sse_encode_String(self.qrcodeKey, serializer);
   }
 
   @protected

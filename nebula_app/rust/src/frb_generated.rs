@@ -37,7 +37,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueMoi,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.11.1";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -665692884;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -554484649;
 
 // Section: executor
 
@@ -157,6 +157,43 @@ fn wire__crate__api__download__cancel_download_impl(
                         let output_ok =
                             crate::api::download::cancel_download(api_task_id, api_delete_files)
                                 .await?;
+                        Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
+fn wire__crate__api__download__generate_bilibili_qrcode_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::SseCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "generate_bilibili_qrcode",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_data_dir = <String>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| async move {
+                transform_result_sse::<_, String>(
+                    (move || async move {
+                        let output_ok =
+                            crate::api::download::generate_bilibili_qrcode(api_data_dir).await?;
                         Ok(output_ok)
                     })()
                     .await,
@@ -302,6 +339,44 @@ fn wire__crate__api__download__init_download_manager_impl(
         },
     )
 }
+fn wire__crate__api__download__is_bilibili_logged_in_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::SseCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "is_bilibili_logged_in",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_data_dir = <String>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| async move {
+                transform_result_sse::<_, ()>(
+                    (move || async move {
+                        let output_ok = Result::<_, ()>::Ok(
+                            crate::api::download::is_bilibili_logged_in(api_data_dir).await,
+                        )?;
+                        Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
 fn wire__crate__api__download__is_video_url_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
@@ -336,6 +411,42 @@ fn wire__crate__api__download__is_video_url_impl(
         },
     )
 }
+fn wire__crate__api__download__logout_bilibili_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::SseCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "logout_bilibili",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_data_dir = <String>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| async move {
+                transform_result_sse::<_, String>(
+                    (move || async move {
+                        let output_ok = crate::api::download::logout_bilibili(api_data_dir).await?;
+                        Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
 fn wire__crate__api__download__pause_download_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
@@ -364,6 +475,45 @@ fn wire__crate__api__download__pause_download_impl(
                 transform_result_sse::<_, String>(
                     (move || async move {
                         let output_ok = crate::api::download::pause_download(api_task_id).await?;
+                        Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
+fn wire__crate__api__download__poll_bilibili_login_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::SseCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "poll_bilibili_login",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_data_dir = <String>::sse_decode(&mut deserializer);
+            let api_qrcode_key = <String>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| async move {
+                transform_result_sse::<_, String>(
+                    (move || async move {
+                        let output_ok =
+                            crate::api::download::poll_bilibili_login(api_data_dir, api_qrcode_key)
+                                .await?;
                         Ok(output_ok)
                     })()
                     .await,
@@ -473,6 +623,46 @@ impl SseDecode for String {
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut inner = <Vec<u8>>::sse_decode(deserializer);
         return String::from_utf8(inner).unwrap();
+    }
+}
+
+impl SseDecode for crate::api::download::BilibiliLoginStatus {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut tag_ = <i32>::sse_decode(deserializer);
+        match tag_ {
+            0 => {
+                return crate::api::download::BilibiliLoginStatus::WaitingScan;
+            }
+            1 => {
+                return crate::api::download::BilibiliLoginStatus::WaitingConfirm;
+            }
+            2 => {
+                return crate::api::download::BilibiliLoginStatus::Success;
+            }
+            3 => {
+                return crate::api::download::BilibiliLoginStatus::Expired;
+            }
+            4 => {
+                let mut var_error = <String>::sse_decode(deserializer);
+                return crate::api::download::BilibiliLoginStatus::Failed { error: var_error };
+            }
+            _ => {
+                unimplemented!("");
+            }
+        }
+    }
+}
+
+impl SseDecode for crate::api::download::BilibiliQrCode {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_url = <String>::sse_decode(deserializer);
+        let mut var_qrcodeKey = <String>::sse_decode(deserializer);
+        return crate::api::download::BilibiliQrCode {
+            url: var_url,
+            qrcode_key: var_qrcodeKey,
+        };
     }
 }
 
@@ -720,18 +910,34 @@ fn pde_ffi_dispatcher_primary_impl(
         1 => wire__crate__api__download__add_download_impl(port, ptr, rust_vec_len, data_len),
         2 => wire__crate__api__download__add_video_download_impl(port, ptr, rust_vec_len, data_len),
         3 => wire__crate__api__download__cancel_download_impl(port, ptr, rust_vec_len, data_len),
-        4 => wire__crate__api__download__get_video_info_impl(port, ptr, rust_vec_len, data_len),
-        6 => wire__crate__api__simple__init_app_impl(port, ptr, rust_vec_len, data_len),
-        7 => wire__crate__api__download__init_download_manager_impl(
+        4 => wire__crate__api__download__generate_bilibili_qrcode_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        8 => wire__crate__api__download__is_video_url_impl(port, ptr, rust_vec_len, data_len),
-        9 => wire__crate__api__download__pause_download_impl(port, ptr, rust_vec_len, data_len),
-        10 => wire__crate__api__download__resume_download_impl(port, ptr, rust_vec_len, data_len),
-        11 => wire__crate__api__download__subscribe_events_impl(port, ptr, rust_vec_len, data_len),
+        5 => wire__crate__api__download__get_video_info_impl(port, ptr, rust_vec_len, data_len),
+        7 => wire__crate__api__simple__init_app_impl(port, ptr, rust_vec_len, data_len),
+        8 => wire__crate__api__download__init_download_manager_impl(
+            port,
+            ptr,
+            rust_vec_len,
+            data_len,
+        ),
+        9 => wire__crate__api__download__is_bilibili_logged_in_impl(
+            port,
+            ptr,
+            rust_vec_len,
+            data_len,
+        ),
+        10 => wire__crate__api__download__is_video_url_impl(port, ptr, rust_vec_len, data_len),
+        11 => wire__crate__api__download__logout_bilibili_impl(port, ptr, rust_vec_len, data_len),
+        12 => wire__crate__api__download__pause_download_impl(port, ptr, rust_vec_len, data_len),
+        13 => {
+            wire__crate__api__download__poll_bilibili_login_impl(port, ptr, rust_vec_len, data_len)
+        }
+        14 => wire__crate__api__download__resume_download_impl(port, ptr, rust_vec_len, data_len),
+        15 => wire__crate__api__download__subscribe_events_impl(port, ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }
@@ -744,13 +950,64 @@ fn pde_ffi_dispatcher_sync_impl(
 ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
     // Codec=Pde (Serialization + dispatch), see doc to use other codecs
     match func_id {
-        5 => wire__crate__api__simple__greet_impl(ptr, rust_vec_len, data_len),
+        6 => wire__crate__api__simple__greet_impl(ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }
 
 // Section: rust2dart
 
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::download::BilibiliLoginStatus {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        match self {
+            crate::api::download::BilibiliLoginStatus::WaitingScan => [0.into_dart()].into_dart(),
+            crate::api::download::BilibiliLoginStatus::WaitingConfirm => {
+                [1.into_dart()].into_dart()
+            }
+            crate::api::download::BilibiliLoginStatus::Success => [2.into_dart()].into_dart(),
+            crate::api::download::BilibiliLoginStatus::Expired => [3.into_dart()].into_dart(),
+            crate::api::download::BilibiliLoginStatus::Failed { error } => {
+                [4.into_dart(), error.into_into_dart().into_dart()].into_dart()
+            }
+            _ => {
+                unimplemented!("");
+            }
+        }
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::api::download::BilibiliLoginStatus
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::download::BilibiliLoginStatus>
+    for crate::api::download::BilibiliLoginStatus
+{
+    fn into_into_dart(self) -> crate::api::download::BilibiliLoginStatus {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::download::BilibiliQrCode {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.url.into_into_dart().into_dart(),
+            self.qrcode_key.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::api::download::BilibiliQrCode
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::download::BilibiliQrCode>
+    for crate::api::download::BilibiliQrCode
+{
+    fn into_into_dart(self) -> crate::api::download::BilibiliQrCode {
+        self
+    }
+}
 // Codec=Dco (DartCObject based), see doc to use other codecs
 impl flutter_rust_bridge::IntoDart for crate::api::download::NebulaEvent {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
@@ -913,6 +1170,41 @@ impl SseEncode for String {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <Vec<u8>>::sse_encode(self.into_bytes(), serializer);
+    }
+}
+
+impl SseEncode for crate::api::download::BilibiliLoginStatus {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        match self {
+            crate::api::download::BilibiliLoginStatus::WaitingScan => {
+                <i32>::sse_encode(0, serializer);
+            }
+            crate::api::download::BilibiliLoginStatus::WaitingConfirm => {
+                <i32>::sse_encode(1, serializer);
+            }
+            crate::api::download::BilibiliLoginStatus::Success => {
+                <i32>::sse_encode(2, serializer);
+            }
+            crate::api::download::BilibiliLoginStatus::Expired => {
+                <i32>::sse_encode(3, serializer);
+            }
+            crate::api::download::BilibiliLoginStatus::Failed { error } => {
+                <i32>::sse_encode(4, serializer);
+                <String>::sse_encode(error, serializer);
+            }
+            _ => {
+                unimplemented!("");
+            }
+        }
+    }
+}
+
+impl SseEncode for crate::api::download::BilibiliQrCode {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <String>::sse_encode(self.url, serializer);
+        <String>::sse_encode(self.qrcode_key, serializer);
     }
 }
 

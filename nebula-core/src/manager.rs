@@ -5,6 +5,7 @@
 use crate::config::ManagerConfig;
 use crate::error::{NebulaError, Result};
 use crate::event::{DownloadEvent, Progress};
+use crate::protocol::bilibili::BilibiliAuth;
 use crate::protocol::http::HttpHandler;
 use crate::protocol::torrent::TorrentHandler;
 use crate::protocol::video::VideoHandler;
@@ -62,6 +63,9 @@ pub struct DownloadManager {
     /// BitTorrent 下载处理器 (可选，初始化失败时为 None)
     torrent_handler: Option<Arc<TorrentHandler>>,
 
+    /// Bilibili 认证管理器 (用于高码率下载)
+    bilibili_auth: Arc<BilibiliAuth>,
+
     /// 事件广播发送端
     event_tx: broadcast::Sender<DownloadEvent>,
 }
@@ -88,7 +92,7 @@ impl DownloadManager {
 
         // 创建 BitTorrent 处理器 (可选)
         let data_dir = config.download_dir.join(".nebula");
-        let torrent_handler = match TorrentHandler::new(config.torrent.clone(), data_dir).await {
+        let torrent_handler = match TorrentHandler::new(config.torrent.clone(), data_dir.clone()).await {
             Ok(handler) => {
                 info!("BitTorrent 处理器初始化成功");
                 Some(Arc::new(handler))
@@ -98,6 +102,9 @@ impl DownloadManager {
                 None
             }
         };
+
+        // 创建 Bilibili 认证管理器
+        let bilibili_auth = Arc::new(BilibiliAuth::new(data_dir));
 
         // 创建事件通道
         let (event_tx, _) = broadcast::channel(EVENT_CHANNEL_CAPACITY);
@@ -109,6 +116,7 @@ impl DownloadManager {
             tasks: Arc::new(RwLock::new(HashMap::new())),
             http_handler,
             torrent_handler,
+            bilibili_auth,
             event_tx,
         })
     }
@@ -254,6 +262,7 @@ impl DownloadManager {
                 let url = url.clone();
                 let format_id = format_id.clone();
                 let event_tx_clone = event_tx.clone();
+                let bilibili_auth = Arc::clone(&self.bilibili_auth);
                 
                 tokio::spawn(async move {
                      // 更新任务状态
@@ -263,6 +272,13 @@ impl DownloadManager {
                             task.status = TaskStatus::Downloading;
                         }
                     }
+                    
+                    // 导出 Bilibili cookies (如果已登录)
+                    let cookies_path = bilibili_auth
+                        .export_cookies_for_ytdlp()
+                        .await
+                        .ok()
+                        .flatten();
                     
                     // 创建 mpsc channel 适配 VideoHandler
                     let (tx, mut rx) = tokio::sync::mpsc::channel(100);
@@ -278,6 +294,7 @@ impl DownloadManager {
                     if let Err(e) = handler.download_video(
                         &url,
                         format_id.as_deref(),
+                        cookies_path.as_ref(),
                         tx,
                         task_id
                     ).await {

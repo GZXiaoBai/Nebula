@@ -2,6 +2,7 @@
 //!
 //! 提供不同下载协议的统一抽象和具体实现。
 
+pub mod bilibili;
 pub mod http;
 pub mod torrent;
 pub mod video;

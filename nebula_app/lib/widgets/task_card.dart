@@ -1,41 +1,9 @@
 import 'package:flutter/material.dart';
-
 import '../theme.dart';
+import '../pages/downloads_page.dart';
 import 'progress_bar.dart';
 
-/// 下载任务状态
-enum TaskStatus {
-  pending,
-  downloading,
-  paused,
-  completed,
-  failed,
-}
-
-/// 下载任务数据模型
-class DownloadTask {
-  final String id;
-  final String name;
-  final TaskStatus status;
-  final double progress;
-  final int downloadSpeed; // bytes per second
-  final int totalSize;
-  final int downloadedSize;
-  final int? etaSeconds;
-
-  const DownloadTask({
-    required this.id,
-    required this.name,
-    required this.status,
-    required this.progress,
-    required this.downloadSpeed,
-    required this.totalSize,
-    required this.downloadedSize,
-    this.etaSeconds,
-  });
-}
-
-/// 下载任务卡片组件
+/// 下载任务卡片组件 - 重构版本
 class TaskCard extends StatefulWidget {
   const TaskCard({
     super.key,
@@ -43,19 +11,41 @@ class TaskCard extends StatefulWidget {
     this.onPause,
     this.onResume,
     this.onCancel,
+    this.onTap,
   });
 
-  final DownloadTask task;
+  final DownloadTaskInfo task;
   final VoidCallback? onPause;
   final VoidCallback? onResume;
   final VoidCallback? onCancel;
+  final VoidCallback? onTap;
 
   @override
   State<TaskCard> createState() => _TaskCardState();
 }
 
-class _TaskCardState extends State<TaskCard> {
+class _TaskCardState extends State<TaskCard> with SingleTickerProviderStateMixin {
   bool _isHovered = false;
+  late AnimationController _animController;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animController = AnimationController(
+      vsync: this,
+      duration: NebulaTheme.animFast,
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.02).animate(
+      CurvedAnimation(parent: _animController, curve: Curves.easeOutCubic),
+    );
+  }
+
+  @override
+  void dispose() {
+    _animController.dispose();
+    super.dispose();
+  }
 
   String _formatBytes(int bytes) {
     if (bytes < 1024) return '$bytes B';
@@ -97,7 +87,7 @@ class _TaskCardState extends State<TaskCard> {
   Color _getStatusColor() {
     switch (widget.task.status) {
       case TaskStatus.pending:
-        return NebulaTheme.textMuted;
+        return NebulaTheme.darkTextMuted;
       case TaskStatus.downloading:
         return NebulaTheme.primaryStart;
       case TaskStatus.paused:
@@ -111,130 +101,198 @@ class _TaskCardState extends State<TaskCard> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final progress = widget.task.progress;
+    final progressValue = progress != null && progress.totalSize > BigInt.zero
+        ? progress.downloadedSize.toDouble() / progress.totalSize.toDouble()
+        : 0.0;
+
     return MouseRegion(
-      onEnter: (_) => setState(() => _isHovered = true),
-      onExit: (_) => setState(() => _isHovered = false),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
-        padding: const EdgeInsets.all(NebulaTheme.spacingMd),
-        decoration: BoxDecoration(
-          color: _isHovered ? NebulaTheme.cardHover : NebulaTheme.card,
-          borderRadius: BorderRadius.circular(NebulaTheme.radiusMd),
-          border: Border.all(
-            color: _isHovered ? NebulaTheme.borderLight : NebulaTheme.border,
+      onEnter: (_) {
+        setState(() => _isHovered = true);
+        _animController.forward();
+      },
+      onExit: (_) {
+        setState(() => _isHovered = false);
+        _animController.reverse();
+      },
+      child: ScaleTransition(
+        scale: _scaleAnimation,
+        child: GestureDetector(
+          onTap: widget.onTap,
+          child: AnimatedContainer(
+            duration: NebulaTheme.animFast,
+            padding: const EdgeInsets.all(NebulaTheme.spacingMd),
+            decoration: BoxDecoration(
+              color: _isHovered ? theme.nebulaCardHover : theme.nebulaCard,
+              borderRadius: BorderRadius.circular(NebulaTheme.radiusMd),
+              border: Border.all(
+                color: _isHovered
+                    ? NebulaTheme.primaryStart.withOpacity(0.3)
+                    : theme.nebulaBorder.withOpacity(0.5),
+              ),
+              boxShadow: _isHovered ? theme.nebulaCardShadow : null,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // 标题行
+                Row(
+                  children: [
+                    // 状态图标
+                    Container(
+                      padding: const EdgeInsets.all(NebulaTheme.spacingSm),
+                      decoration: BoxDecoration(
+                        color: _getStatusColor().withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(NebulaTheme.radiusSm),
+                      ),
+                      child: Icon(
+                        _getStatusIcon(),
+                        color: _getStatusColor(),
+                        size: 20,
+                      ),
+                    ),
+                    const SizedBox(width: NebulaTheme.spacingMd),
+                    // 文件名
+                    Expanded(
+                      child: Text(
+                        widget.task.name,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          color: theme.nebulaTextPrimary,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    // 操作按钮
+                    AnimatedOpacity(
+                      opacity: _isHovered ? 1.0 : 0.0,
+                      duration: NebulaTheme.animFast,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (widget.task.status == TaskStatus.downloading)
+                            _buildIconButton(
+                              Icons.pause_rounded,
+                              '暂停',
+                              widget.onPause,
+                            ),
+                          if (widget.task.status == TaskStatus.paused)
+                            _buildIconButton(
+                              Icons.play_arrow_rounded,
+                              '继续',
+                              widget.onResume,
+                            ),
+                          _buildIconButton(
+                            Icons.close_rounded,
+                            '取消',
+                            widget.onCancel,
+                            color: NebulaTheme.error,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: NebulaTheme.spacingMd),
+
+                // 进度条
+                ProgressBar(
+                  progress: progressValue,
+                  height: 6,
+                  showGlow: widget.task.status == TaskStatus.downloading,
+                ),
+                const SizedBox(height: NebulaTheme.spacingSm),
+
+                // 信息行
+                Row(
+                  children: [
+                    // 进度百分比
+                    Text(
+                      '${(progressValue * 100).toStringAsFixed(1)}%',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.nebulaTextSecondary,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(width: NebulaTheme.spacingMd),
+                    // 已下载 / 总大小
+                    if (progress != null)
+                      Text(
+                        '${_formatBytes(progress.downloadedSize.toInt())} / ${_formatBytes(progress.totalSize.toInt())}',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.nebulaTextMuted,
+                        ),
+                      ),
+                    const Spacer(),
+                    // 速度和 ETA
+                    if (widget.task.status == TaskStatus.downloading && progress != null) ...[
+                      Icon(
+                        Icons.speed_rounded,
+                        size: 14,
+                        color: theme.nebulaTextMuted,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        _formatSpeed(progress.downloadSpeed.toInt()),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: NebulaTheme.success,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(width: NebulaTheme.spacingMd),
+                      Icon(
+                        Icons.timer_outlined,
+                        size: 14,
+                        color: theme.nebulaTextMuted,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        _formatEta(progress.etaSecs?.toInt()),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.nebulaTextMuted,
+                        ),
+                      ),
+                    ],
+                    // 错误信息
+                    if (widget.task.status == TaskStatus.failed && widget.task.error != null)
+                      Flexible(
+                        child: Text(
+                          widget.task.error!,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: NebulaTheme.error,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // 标题行
-            Row(
-              children: [
-                // 状态图标
-                Container(
-                  padding: const EdgeInsets.all(NebulaTheme.spacingSm),
-                  decoration: BoxDecoration(
-                    color: _getStatusColor().withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(NebulaTheme.radiusSm),
-                  ),
-                  child: Icon(
-                    _getStatusIcon(),
-                    color: _getStatusColor(),
-                    size: 20,
-                  ),
-                ),
-                const SizedBox(width: NebulaTheme.spacingSm),
-                // 文件名
-                Expanded(
-                  child: Text(
-                    widget.task.name,
-                    style: Theme.of(context).textTheme.titleMedium,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                // 操作按钮
-                if (_isHovered) ...[
-                  if (widget.task.status == TaskStatus.downloading)
-                    IconButton(
-                      icon: const Icon(Icons.pause_rounded),
-                      iconSize: 20,
-                      tooltip: '暂停',
-                      onPressed: widget.onPause,
-                    ),
-                  if (widget.task.status == TaskStatus.paused)
-                    IconButton(
-                      icon: const Icon(Icons.play_arrow_rounded),
-                      iconSize: 20,
-                      tooltip: '继续',
-                      onPressed: widget.onResume,
-                    ),
-                  IconButton(
-                    icon: const Icon(Icons.close_rounded),
-                    iconSize: 20,
-                    tooltip: '取消',
-                    onPressed: widget.onCancel,
-                  ),
-                ],
-              ],
-            ),
-            const SizedBox(height: NebulaTheme.spacingSm),
+      ),
+    );
+  }
 
-            // 进度条
-            ProgressBar(
-              progress: widget.task.progress,
-              height: 6,
-              showGlow: widget.task.status == TaskStatus.downloading,
+  Widget _buildIconButton(IconData icon, String tooltip, VoidCallback? onPressed, {Color? color}) {
+    final theme = Theme.of(context);
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onPressed,
+        borderRadius: BorderRadius.circular(NebulaTheme.radiusSm),
+        child: Tooltip(
+          message: tooltip,
+          child: Padding(
+            padding: const EdgeInsets.all(6),
+            child: Icon(
+              icon,
+              size: 18,
+              color: color ?? theme.nebulaTextSecondary,
             ),
-            const SizedBox(height: NebulaTheme.spacingSm),
-
-            // 信息行
-            Row(
-              children: [
-                // 进度百分比
-                Text(
-                  '${(widget.task.progress * 100).toStringAsFixed(1)}%',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: NebulaTheme.textSecondary,
-                      ),
-                ),
-                const SizedBox(width: NebulaTheme.spacingMd),
-                // 已下载 / 总大小
-                Text(
-                  '${_formatBytes(widget.task.downloadedSize)} / ${_formatBytes(widget.task.totalSize)}',
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-                const Spacer(),
-                // 速度
-                if (widget.task.status == TaskStatus.downloading) ...[
-                  Icon(
-                    Icons.speed_rounded,
-                    size: 14,
-                    color: NebulaTheme.textMuted,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    _formatSpeed(widget.task.downloadSpeed),
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: NebulaTheme.success,
-                        ),
-                  ),
-                  const SizedBox(width: NebulaTheme.spacingMd),
-                  // ETA
-                  Icon(
-                    Icons.timer_outlined,
-                    size: 14,
-                    color: NebulaTheme.textMuted,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    _formatEta(widget.task.etaSeconds),
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                ],
-              ],
-            ),
-          ],
+          ),
         ),
       ),
     );

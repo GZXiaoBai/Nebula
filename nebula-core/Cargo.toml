@@ -46,6 +46,10 @@ async-trait = "0.1"
 # 用户目录
 dirs = "5.0"
 
+# 加密 (Cookie 加密存储)
+aes-gcm = "0.10"
+rand = "0.9"
+
 [dev-dependencies]
 tempfile.workspace = true
 tokio-test = "0.4"

@@ -73,6 +73,61 @@ Future<bool> isVideoUrl({required String url}) =>
 Future<VideoInfo> getVideoInfo({required String url}) =>
     RustLib.instance.api.crateApiDownloadGetVideoInfo(url: url);
 
+/// 生成 Bilibili 登录二维码
+Future<BilibiliQrCode> generateBilibiliQrcode({required String dataDir}) =>
+    RustLib.instance.api.crateApiDownloadGenerateBilibiliQrcode(
+      dataDir: dataDir,
+    );
+
+/// 轮询 Bilibili 扫码登录状态
+Future<BilibiliLoginStatus> pollBilibiliLogin({
+  required String dataDir,
+  required String qrcodeKey,
+}) => RustLib.instance.api.crateApiDownloadPollBilibiliLogin(
+  dataDir: dataDir,
+  qrcodeKey: qrcodeKey,
+);
+
+/// 检查 Bilibili 是否已登录
+Future<bool> isBilibiliLoggedIn({required String dataDir}) =>
+    RustLib.instance.api.crateApiDownloadIsBilibiliLoggedIn(dataDir: dataDir);
+
+/// 注销 Bilibili 账号
+Future<void> logoutBilibili({required String dataDir}) =>
+    RustLib.instance.api.crateApiDownloadLogoutBilibili(dataDir: dataDir);
+
+@freezed
+sealed class BilibiliLoginStatus with _$BilibiliLoginStatus {
+  const BilibiliLoginStatus._();
+
+  /// 等待扫描
+  const factory BilibiliLoginStatus.waitingScan() =
+      BilibiliLoginStatus_WaitingScan;
+
+  /// 已扫描待确认
+  const factory BilibiliLoginStatus.waitingConfirm() =
+      BilibiliLoginStatus_WaitingConfirm;
+
+  /// 登录成功
+  const factory BilibiliLoginStatus.success() = BilibiliLoginStatus_Success;
+
+  /// 二维码已过期
+  const factory BilibiliLoginStatus.expired() = BilibiliLoginStatus_Expired;
+
+  /// 登录失败
+  const factory BilibiliLoginStatus.failed({required String error}) =
+      BilibiliLoginStatus_Failed;
+}
+
+/// Bilibili 二维码数据
+@freezed
+sealed class BilibiliQrCode with _$BilibiliQrCode {
+  const factory BilibiliQrCode({
+    required String url,
+    required String qrcodeKey,
+  }) = _BilibiliQrCode;
+}
+
 @freezed
 sealed class NebulaEvent with _$NebulaEvent {
   const NebulaEvent._();
