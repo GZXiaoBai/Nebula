@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../theme.dart';
+import '../providers/download_provider.dart';
 
 /// 已完成下载页
 class CompletedPage extends StatefulWidget {
@@ -10,33 +12,42 @@ class CompletedPage extends StatefulWidget {
 }
 
 class _CompletedPageState extends State<CompletedPage> {
-  // TODO: 从持久化存储加载已完成任务
-  final List<CompletedTask> _completedTasks = [];
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // 顶部标题
-          _buildHeader(theme),
+    return Consumer<DownloadProvider>(
+      builder: (context, provider, child) {
+        final completedTasks = provider.completedTasks;
+        // 按完成时间倒序排列
+        completedTasks.sort((a, b) {
+          if (a.completedAt == null) return 1;
+          if (b.completedAt == null) return -1;
+          return b.completedAt!.compareTo(a.completedAt!);
+        });
 
-          // 任务列表
-          Expanded(
-            child: _completedTasks.isEmpty
-                ? _buildEmptyState(theme)
-                : _buildTaskList(),
+        return Scaffold(
+          backgroundColor: Colors.transparent,
+          body: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // 顶部标题
+              _buildHeader(theme, completedTasks.length),
+
+              // 任务列表
+              Expanded(
+                child: completedTasks.isEmpty
+                    ? _buildEmptyState(theme)
+                    : _buildTaskList(completedTasks),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
-  Widget _buildHeader(ThemeData theme) {
+  Widget _buildHeader(ThemeData theme, int count) {
     return Container(
       padding: const EdgeInsets.all(NebulaTheme.spacingLg),
       child: Row(
@@ -58,7 +69,7 @@ class _CompletedPageState extends State<CompletedPage> {
               borderRadius: BorderRadius.circular(NebulaTheme.radiusSm),
             ),
             child: Text(
-              '${_completedTasks.length}',
+              '$count',
               style: const TextStyle(
                 color: NebulaTheme.success,
                 fontWeight: FontWeight.w600,
@@ -67,7 +78,7 @@ class _CompletedPageState extends State<CompletedPage> {
             ),
           ),
           const Spacer(),
-          if (_completedTasks.isNotEmpty)
+          if (count > 0)
             TextButton.icon(
               onPressed: _clearAll,
               icon: const Icon(Icons.delete_outline_rounded, size: 18),
@@ -118,23 +129,25 @@ class _CompletedPageState extends State<CompletedPage> {
     );
   }
 
-  Widget _buildTaskList() {
+  Widget _buildTaskList(List<DownloadTaskInfo> tasks) {
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: NebulaTheme.spacingLg),
-      itemCount: _completedTasks.length,
+      itemCount: tasks.length,
       itemBuilder: (context, index) {
-        final task = _completedTasks[index];
+        final task = tasks[index];
         return _CompletedTaskCard(
           task: task,
           onOpen: () => _openFile(task),
           onOpenFolder: () => _openFolder(task),
-          onDelete: () => _deleteTask(index),
+          onDelete: () => _deleteTask(task),
         );
       },
     );
   }
 
   void _clearAll() {
+    // TODO: 实现清空逻辑（可能需要在 Provider 中添加方法）
+    // 目前仅展示 Dialog
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -147,9 +160,7 @@ class _CompletedPageState extends State<CompletedPage> {
           ),
           FilledButton(
             onPressed: () {
-              setState(() {
-                _completedTasks.clear();
-              });
+              // TODO: context.read<DownloadProvider>().clearCompleted();
               Navigator.pop(context);
             },
             child: const Text('确定'),
@@ -159,24 +170,22 @@ class _CompletedPageState extends State<CompletedPage> {
     );
   }
 
-  void _openFile(CompletedTask task) {
+  void _openFile(DownloadTaskInfo task) {
     // TODO: 实现打开文件
   }
 
-  void _openFolder(CompletedTask task) {
+  void _openFolder(DownloadTaskInfo task) {
     // TODO: 实现打开文件夹
   }
 
-  void _deleteTask(int index) {
-    setState(() {
-      _completedTasks.removeAt(index);
-    });
+  void _deleteTask(DownloadTaskInfo task) {
+    // TODO: context.read<DownloadProvider>().removeTask(task.id);
   }
 }
 
 /// 已完成任务卡片
 class _CompletedTaskCard extends StatelessWidget {
-  final CompletedTask task;
+  final DownloadTaskInfo task;
   final VoidCallback onOpen;
   final VoidCallback onOpenFolder;
   final VoidCallback onDelete;
@@ -236,7 +245,7 @@ class _CompletedTaskCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '${_formatSize(task.size)} • ${_formatDate(task.completedAt)}',
+                  '${_formatSize(task.totalSize ?? 0)} • ${_formatDate(task.completedAt ?? DateTime.now())}',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.nebulaTextMuted,
                   ),
@@ -289,21 +298,4 @@ class _CompletedTaskCard extends StatelessWidget {
       return '${date.month}/${date.day}';
     }
   }
-}
-
-/// 已完成任务数据模型
-class CompletedTask {
-  final String id;
-  final String name;
-  final String path;
-  final int size;
-  final DateTime completedAt;
-
-  CompletedTask({
-    required this.id,
-    required this.name,
-    required this.path,
-    required this.size,
-    required this.completedAt,
-  });
 }

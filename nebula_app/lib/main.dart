@@ -7,6 +7,7 @@ import 'src/rust/api/download.dart';
 import 'src/rust/frb_generated.dart';
 import 'settings.dart';
 import 'theme.dart';
+import 'providers/download_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,8 +25,11 @@ class NebulaApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => old_settings.AppSettings(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => old_settings.AppSettings()),
+        ChangeNotifierProvider(create: (_) => DownloadProvider()..init()),
+      ],
       child: MaterialApp(
         title: 'Nebula',
         debugShowCheckedModeBanner: false,

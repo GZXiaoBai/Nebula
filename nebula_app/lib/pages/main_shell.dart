@@ -167,10 +167,14 @@ class _MainShellState extends State<MainShell> with TickerProviderStateMixin {
   }
 
   Widget _buildLogoArea(ThemeData theme, double width) {
+    // 折叠时为了避免 1px 溢出（由于 border），减少 padding
+    final horizontalPadding = _isExpanded ? NebulaTheme.spacingMd : 8.0;
+    
     return Container(
       height: 72,
-      padding: const EdgeInsets.symmetric(horizontal: NebulaTheme.spacingMd),
+      padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
       child: Row(
+        mainAxisAlignment: _isExpanded ? MainAxisAlignment.start : MainAxisAlignment.center,
         children: [
           // Logo 图标
           Container(

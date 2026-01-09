@@ -7,6 +7,10 @@ import '../src/rust/api/download.dart';
 import '../settings.dart';
 
 /// 下载列表页
+import 'package:provider/provider.dart';
+import '../providers/download_provider.dart';
+
+/// 下载列表页
 class DownloadsPage extends StatefulWidget {
   const DownloadsPage({super.key});
 
@@ -17,62 +21,12 @@ class DownloadsPage extends StatefulWidget {
 class _DownloadsPageState extends State<DownloadsPage> {
   final TextEditingController _urlController = TextEditingController();
   final FocusNode _urlFocusNode = FocusNode();
-  final Map<String, DownloadTaskInfo> _tasks = {};
-
-  @override
-  void initState() {
-    super.initState();
-    _subscribeToEvents();
-  }
 
   @override
   void dispose() {
     _urlController.dispose();
     _urlFocusNode.dispose();
     super.dispose();
-  }
-
-  void _subscribeToEvents() async {
-    final stream = await subscribeEvents();
-    stream.listen((event) {
-      if (!mounted) return;
-      
-      switch (event) {
-        case NebulaEvent_TaskAdded(:final taskId, :final name):
-          setState(() {
-            _tasks[taskId] = DownloadTaskInfo(
-              id: taskId,
-              name: name,
-              status: TaskStatus.pending,
-            );
-          });
-        case NebulaEvent_TaskStarted(:final taskId):
-          setState(() {
-            _tasks[taskId]?.status = TaskStatus.downloading;
-          });
-        case NebulaEvent_ProgressUpdated(:final taskId, :final progress):
-          setState(() {
-            _tasks[taskId]?.progress = progress;
-          });
-        case NebulaEvent_TaskCompleted(:final taskId):
-          setState(() {
-            _tasks[taskId]?.status = TaskStatus.completed;
-          });
-        case NebulaEvent_TaskFailed(:final taskId, :final error):
-          setState(() {
-            _tasks[taskId]?.status = TaskStatus.failed;
-            _tasks[taskId]?.error = error;
-          });
-        case NebulaEvent_MetadataReceived(:final taskId, :final name, :final totalSize, :final fileCount):
-          setState(() {
-            _tasks[taskId]?.name = name;
-            _tasks[taskId]?.totalSize = totalSize.toInt();
-            _tasks[taskId]?.fileCount = fileCount.toInt();
-          });
-        default:
-          break;
-      }
-    });
   }
 
   Future<void> _addDownload() async {
@@ -118,30 +72,33 @@ class _DownloadsPageState extends State<DownloadsPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final activeTasks = _tasks.values
-        .where((t) => t.status != TaskStatus.completed)
-        .toList();
+    
+    return Consumer<DownloadProvider>(
+      builder: (context, provider, child) {
+        final activeTasks = provider.activeTasks;
 
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // 顶部标题和输入区域
-          _buildHeader(theme),
-          
-          // 任务列表
-          Expanded(
-            child: activeTasks.isEmpty
-                ? _buildEmptyState(theme)
-                : _buildTaskList(activeTasks),
+        return Scaffold(
+          backgroundColor: Colors.transparent,
+          body: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // 顶部标题和输入区域
+              _buildHeader(theme, activeTasks),
+              
+              // 任务列表
+              Expanded(
+                child: activeTasks.isEmpty
+                    ? _buildEmptyState(theme)
+                    : _buildTaskList(activeTasks),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
-  Widget _buildHeader(ThemeData theme) {
+  Widget _buildHeader(ThemeData theme, List<DownloadTaskInfo> tasks) {
     return Container(
       padding: const EdgeInsets.all(NebulaTheme.spacingLg),
       child: Column(
@@ -167,8 +124,8 @@ class _DownloadsPageState extends State<DownloadsPage> {
                   borderRadius: BorderRadius.circular(NebulaTheme.radiusSm),
                 ),
                 child: Text(
-                  '${_tasks.values.where((t) => t.status == TaskStatus.downloading).length}',
-                  style: TextStyle(
+                  '${tasks.where((t) => t.status == TaskStatus.downloading).length}',
+                  style: const TextStyle(
                     color: NebulaTheme.primaryStart,
                     fontWeight: FontWeight.w600,
                     fontSize: 12,
@@ -281,34 +238,4 @@ class _DownloadsPageState extends State<DownloadsPage> {
       },
     );
   }
-}
-
-/// 任务状态
-enum TaskStatus {
-  pending,
-  downloading,
-  paused,
-  completed,
-  failed,
-}
-
-/// 下载任务信息
-class DownloadTaskInfo {
-  String id;
-  String name;
-  TaskStatus status;
-  ProgressEvent? progress;
-  String? error;
-  int? totalSize;
-  int? fileCount;
-
-  DownloadTaskInfo({
-    required this.id,
-    required this.name,
-    required this.status,
-    this.progress,
-    this.error,
-    this.totalSize,
-    this.fileCount,
-  });
 }

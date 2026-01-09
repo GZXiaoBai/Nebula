@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme.dart';
-import '../pages/downloads_page.dart';
+import '../providers/download_provider.dart';
 import 'progress_bar.dart';
 
 /// 下载任务卡片组件 - 重构版本
