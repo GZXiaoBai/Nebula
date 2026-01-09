@@ -140,18 +140,44 @@ class _TaskCardState extends State<TaskCard> with SingleTickerProviderStateMixin
                 Row(
                   children: [
                     // 状态图标
-                    Container(
-                      padding: const EdgeInsets.all(NebulaTheme.spacingSm),
-                      decoration: BoxDecoration(
-                        color: _getStatusColor().withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(NebulaTheme.radiusSm),
+                    // 状态图标或缩略图
+                    if (widget.task.thumbnail != null)
+                      Container(
+                        width: 60,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(NebulaTheme.radiusSm),
+                          color: NebulaTheme.background,
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(NebulaTheme.radiusSm),
+                          child: Image.network(
+                            widget.task.thumbnail!,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => Container(
+                              color: _getStatusColor().withOpacity(0.15),
+                              child: Icon(
+                                _getStatusIcon(),
+                                color: _getStatusColor(),
+                                size: 20,
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                    else
+                      Container(
+                        padding: const EdgeInsets.all(NebulaTheme.spacingSm),
+                        decoration: BoxDecoration(
+                          color: _getStatusColor().withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(NebulaTheme.radiusSm),
+                        ),
+                        child: Icon(
+                          _getStatusIcon(),
+                          color: _getStatusColor(),
+                          size: 20,
+                        ),
                       ),
-                      child: Icon(
-                        _getStatusIcon(),
-                        color: _getStatusColor(),
-                        size: 20,
-                      ),
-                    ),
                     const SizedBox(width: NebulaTheme.spacingMd),
                     // 文件名
                     Expanded(

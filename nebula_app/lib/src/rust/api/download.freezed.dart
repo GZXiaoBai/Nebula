@@ -797,10 +797,10 @@ return metadataReceived(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String taskId,  String name)?  taskAdded,TResult Function( String taskId)?  taskStarted,TResult Function( String taskId,  ProgressEvent progress)?  progressUpdated,TResult Function( String taskId)?  taskCompleted,TResult Function( String taskId,  String error)?  taskFailed,TResult Function( String taskId)?  taskPaused,TResult Function( String taskId)?  taskResumed,TResult Function( String taskId)?  taskRemoved,TResult Function( String taskId,  String name,  BigInt totalSize,  BigInt fileCount)?  metadataReceived,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String taskId,  String name,  String? thumbnail)?  taskAdded,TResult Function( String taskId)?  taskStarted,TResult Function( String taskId,  ProgressEvent progress)?  progressUpdated,TResult Function( String taskId)?  taskCompleted,TResult Function( String taskId,  String error)?  taskFailed,TResult Function( String taskId)?  taskPaused,TResult Function( String taskId)?  taskResumed,TResult Function( String taskId)?  taskRemoved,TResult Function( String taskId,  String name,  BigInt totalSize,  BigInt fileCount)?  metadataReceived,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case NebulaEvent_TaskAdded() when taskAdded != null:
-return taskAdded(_that.taskId,_that.name);case NebulaEvent_TaskStarted() when taskStarted != null:
+return taskAdded(_that.taskId,_that.name,_that.thumbnail);case NebulaEvent_TaskStarted() when taskStarted != null:
 return taskStarted(_that.taskId);case NebulaEvent_ProgressUpdated() when progressUpdated != null:
 return progressUpdated(_that.taskId,_that.progress);case NebulaEvent_TaskCompleted() when taskCompleted != null:
 return taskCompleted(_that.taskId);case NebulaEvent_TaskFailed() when taskFailed != null:
@@ -826,10 +826,10 @@ return metadataReceived(_that.taskId,_that.name,_that.totalSize,_that.fileCount)
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String taskId,  String name)  taskAdded,required TResult Function( String taskId)  taskStarted,required TResult Function( String taskId,  ProgressEvent progress)  progressUpdated,required TResult Function( String taskId)  taskCompleted,required TResult Function( String taskId,  String error)  taskFailed,required TResult Function( String taskId)  taskPaused,required TResult Function( String taskId)  taskResumed,required TResult Function( String taskId)  taskRemoved,required TResult Function( String taskId,  String name,  BigInt totalSize,  BigInt fileCount)  metadataReceived,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String taskId,  String name,  String? thumbnail)  taskAdded,required TResult Function( String taskId)  taskStarted,required TResult Function( String taskId,  ProgressEvent progress)  progressUpdated,required TResult Function( String taskId)  taskCompleted,required TResult Function( String taskId,  String error)  taskFailed,required TResult Function( String taskId)  taskPaused,required TResult Function( String taskId)  taskResumed,required TResult Function( String taskId)  taskRemoved,required TResult Function( String taskId,  String name,  BigInt totalSize,  BigInt fileCount)  metadataReceived,}) {final _that = this;
 switch (_that) {
 case NebulaEvent_TaskAdded():
-return taskAdded(_that.taskId,_that.name);case NebulaEvent_TaskStarted():
+return taskAdded(_that.taskId,_that.name,_that.thumbnail);case NebulaEvent_TaskStarted():
 return taskStarted(_that.taskId);case NebulaEvent_ProgressUpdated():
 return progressUpdated(_that.taskId,_that.progress);case NebulaEvent_TaskCompleted():
 return taskCompleted(_that.taskId);case NebulaEvent_TaskFailed():
@@ -851,10 +851,10 @@ return metadataReceived(_that.taskId,_that.name,_that.totalSize,_that.fileCount)
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String taskId,  String name)?  taskAdded,TResult? Function( String taskId)?  taskStarted,TResult? Function( String taskId,  ProgressEvent progress)?  progressUpdated,TResult? Function( String taskId)?  taskCompleted,TResult? Function( String taskId,  String error)?  taskFailed,TResult? Function( String taskId)?  taskPaused,TResult? Function( String taskId)?  taskResumed,TResult? Function( String taskId)?  taskRemoved,TResult? Function( String taskId,  String name,  BigInt totalSize,  BigInt fileCount)?  metadataReceived,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String taskId,  String name,  String? thumbnail)?  taskAdded,TResult? Function( String taskId)?  taskStarted,TResult? Function( String taskId,  ProgressEvent progress)?  progressUpdated,TResult? Function( String taskId)?  taskCompleted,TResult? Function( String taskId,  String error)?  taskFailed,TResult? Function( String taskId)?  taskPaused,TResult? Function( String taskId)?  taskResumed,TResult? Function( String taskId)?  taskRemoved,TResult? Function( String taskId,  String name,  BigInt totalSize,  BigInt fileCount)?  metadataReceived,}) {final _that = this;
 switch (_that) {
 case NebulaEvent_TaskAdded() when taskAdded != null:
-return taskAdded(_that.taskId,_that.name);case NebulaEvent_TaskStarted() when taskStarted != null:
+return taskAdded(_that.taskId,_that.name,_that.thumbnail);case NebulaEvent_TaskStarted() when taskStarted != null:
 return taskStarted(_that.taskId);case NebulaEvent_ProgressUpdated() when progressUpdated != null:
 return progressUpdated(_that.taskId,_that.progress);case NebulaEvent_TaskCompleted() when taskCompleted != null:
 return taskCompleted(_that.taskId);case NebulaEvent_TaskFailed() when taskFailed != null:
@@ -874,11 +874,12 @@ return metadataReceived(_that.taskId,_that.name,_that.totalSize,_that.fileCount)
 
 
 class NebulaEvent_TaskAdded extends NebulaEvent {
-  const NebulaEvent_TaskAdded({required this.taskId, required this.name}): super._();
+  const NebulaEvent_TaskAdded({required this.taskId, required this.name, this.thumbnail}): super._();
   
 
 @override final  String taskId;
  final  String name;
+ final  String? thumbnail;
 
 /// Create a copy of NebulaEvent
 /// with the given fields replaced by the non-null parameter values.
@@ -890,16 +891,16 @@ $NebulaEvent_TaskAddedCopyWith<NebulaEvent_TaskAdded> get copyWith => _$NebulaEv
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is NebulaEvent_TaskAdded&&(identical(other.taskId, taskId) || other.taskId == taskId)&&(identical(other.name, name) || other.name == name));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is NebulaEvent_TaskAdded&&(identical(other.taskId, taskId) || other.taskId == taskId)&&(identical(other.name, name) || other.name == name)&&(identical(other.thumbnail, thumbnail) || other.thumbnail == thumbnail));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,taskId,name);
+int get hashCode => Object.hash(runtimeType,taskId,name,thumbnail);
 
 @override
 String toString() {
-  return 'NebulaEvent.taskAdded(taskId: $taskId, name: $name)';
+  return 'NebulaEvent.taskAdded(taskId: $taskId, name: $name, thumbnail: $thumbnail)';
 }
 
 
@@ -910,7 +911,7 @@ abstract mixin class $NebulaEvent_TaskAddedCopyWith<$Res> implements $NebulaEven
   factory $NebulaEvent_TaskAddedCopyWith(NebulaEvent_TaskAdded value, $Res Function(NebulaEvent_TaskAdded) _then) = _$NebulaEvent_TaskAddedCopyWithImpl;
 @override @useResult
 $Res call({
- String taskId, String name
+ String taskId, String name, String? thumbnail
 });
 
 
@@ -927,11 +928,12 @@ class _$NebulaEvent_TaskAddedCopyWithImpl<$Res>
 
 /// Create a copy of NebulaEvent
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? taskId = null,Object? name = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? taskId = null,Object? name = null,Object? thumbnail = freezed,}) {
   return _then(NebulaEvent_TaskAdded(
 taskId: null == taskId ? _self.taskId : taskId // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,
+as String,thumbnail: freezed == thumbnail ? _self.thumbnail : thumbnail // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

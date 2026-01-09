@@ -39,18 +39,21 @@ class _DownloadsPageState extends State<DownloadsPage> {
       
       if (isVideo && mounted) {
         // 显示视频信息对话框
-        final formatId = await showDialog<String>(
+        // 显示视频信息对话框
+        final result = await showDialog<({String formatId, String title, String? thumbnail})>(
           context: context,
           barrierDismissible: false,
           builder: (context) => VideoInfoDialog(url: url),
         );
         
-        if (formatId != null && mounted) {
+        if (result != null && mounted) {
           final savePath = await AppSettings.getDownloadPath();
           await addVideoDownload(
             url: url,
             savePath: savePath,
-            formatId: formatId,
+            formatId: result.formatId,
+            title: result.title,
+            thumbnail: result.thumbnail,
           );
         }
       } else {

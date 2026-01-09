@@ -39,7 +39,7 @@ impl From<&Progress> for ProgressEvent {
 /// 下载事件类型
 #[frb(dart_metadata = ("freezed"))]
 pub enum NebulaEvent {
-    TaskAdded { task_id: String, name: String },
+    TaskAdded { task_id: String, name: String, thumbnail: Option<String> },
     TaskStarted { task_id: String },
     ProgressUpdated { task_id: String, progress: ProgressEvent },
     TaskCompleted { task_id: String },
@@ -89,12 +89,18 @@ pub async fn add_download(source: String, save_path: String) -> Result<String, S
 
 /// 添加视频下载任务（指定画质）
 #[frb]
-pub async fn add_video_download(url: String, save_path: String, format_id: Option<String>) -> Result<String, String> {
+pub async fn add_video_download(
+    url: String, 
+    save_path: String, 
+    format_id: Option<String>,
+    title: Option<String>,
+    thumbnail: Option<String>
+) -> Result<String, String> {
     let guard = MANAGER.read().await;
     let manager = guard.as_ref().ok_or("下载管理器未初始化")?;
 
     let task_id = manager
-        .add_video_task(&url, format_id, PathBuf::from(&save_path))
+        .add_video_task(&url, format_id, PathBuf::from(&save_path), title, thumbnail)
         .await
         .map_err(|e| e.to_string())?;
 
@@ -151,10 +157,11 @@ pub async fn subscribe_events(sink: StreamSink<NebulaEvent>) -> Result<(), Strin
     tokio::spawn(async move {
         while let Ok(event) = receiver.recv().await {
             let nebula_event = match event {
-                DownloadEvent::TaskAdded { task_id, name } => {
+                DownloadEvent::TaskAdded { task_id, name, thumbnail } => {
                     NebulaEvent::TaskAdded {
                         task_id: task_id.to_string(),
                         name,
+                        thumbnail,
                     }
                 }
                 DownloadEvent::TaskStarted { task_id } => {

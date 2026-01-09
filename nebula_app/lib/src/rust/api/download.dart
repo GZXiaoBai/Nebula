@@ -34,10 +34,14 @@ Future<String> addVideoDownload({
   required String url,
   required String savePath,
   String? formatId,
+  String? title,
+  String? thumbnail,
 }) => RustLib.instance.api.crateApiDownloadAddVideoDownload(
   url: url,
   savePath: savePath,
   formatId: formatId,
+  title: title,
+  thumbnail: thumbnail,
 );
 
 /// 暂停下载任务
@@ -135,6 +139,7 @@ sealed class NebulaEvent with _$NebulaEvent {
   const factory NebulaEvent.taskAdded({
     required String taskId,
     required String name,
+    String? thumbnail,
   }) = NebulaEvent_TaskAdded;
   const factory NebulaEvent.taskStarted({required String taskId}) =
       NebulaEvent_TaskStarted;

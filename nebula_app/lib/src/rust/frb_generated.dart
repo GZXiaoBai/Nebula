@@ -87,6 +87,8 @@ abstract class RustLibApi extends BaseApi {
     required String url,
     required String savePath,
     String? formatId,
+    String? title,
+    String? thumbnail,
   });
 
   Future<void> crateApiDownloadCancelDownload({
@@ -174,6 +176,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     required String url,
     required String savePath,
     String? formatId,
+    String? title,
+    String? thumbnail,
   }) {
     return handler.executeNormal(
       NormalTask(
@@ -182,6 +186,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           sse_encode_String(url, serializer);
           sse_encode_String(savePath, serializer);
           sse_encode_opt_String(formatId, serializer);
+          sse_encode_opt_String(title, serializer);
+          sse_encode_opt_String(thumbnail, serializer);
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
@@ -194,7 +200,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeErrorData: sse_decode_String,
         ),
         constMeta: kCrateApiDownloadAddVideoDownloadConstMeta,
-        argValues: [url, savePath, formatId],
+        argValues: [url, savePath, formatId, title, thumbnail],
         apiImpl: this,
       ),
     );
@@ -203,7 +209,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TaskConstMeta get kCrateApiDownloadAddVideoDownloadConstMeta =>
       const TaskConstMeta(
         debugName: "add_video_download",
-        argNames: ["url", "savePath", "formatId"],
+        argNames: ["url", "savePath", "formatId", "title", "thumbnail"],
       );
 
   @override
@@ -694,6 +700,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         return NebulaEvent_TaskAdded(
           taskId: dco_decode_String(raw[1]),
           name: dco_decode_String(raw[2]),
+          thumbnail: dco_decode_opt_String(raw[3]),
         );
       case 1:
         return NebulaEvent_TaskStarted(taskId: dco_decode_String(raw[1]));
@@ -933,7 +940,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       case 0:
         var var_taskId = sse_decode_String(deserializer);
         var var_name = sse_decode_String(deserializer);
-        return NebulaEvent_TaskAdded(taskId: var_taskId, name: var_name);
+        var var_thumbnail = sse_decode_opt_String(deserializer);
+        return NebulaEvent_TaskAdded(
+          taskId: var_taskId,
+          name: var_name,
+          thumbnail: var_thumbnail,
+        );
       case 1:
         var var_taskId = sse_decode_String(deserializer);
         return NebulaEvent_TaskStarted(taskId: var_taskId);
@@ -1221,10 +1233,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   void sse_encode_nebula_event(NebulaEvent self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     switch (self) {
-      case NebulaEvent_TaskAdded(taskId: final taskId, name: final name):
+      case NebulaEvent_TaskAdded(
+        taskId: final taskId,
+        name: final name,
+        thumbnail: final thumbnail,
+      ):
         sse_encode_i_32(0, serializer);
         sse_encode_String(taskId, serializer);
         sse_encode_String(name, serializer);
+        sse_encode_opt_String(thumbnail, serializer);
       case NebulaEvent_TaskStarted(taskId: final taskId):
         sse_encode_i_32(1, serializer);
         sse_encode_String(taskId, serializer);

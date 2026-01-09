@@ -108,6 +108,8 @@ fn wire__crate__api__download__add_video_download_impl(
             let api_url = <String>::sse_decode(&mut deserializer);
             let api_save_path = <String>::sse_decode(&mut deserializer);
             let api_format_id = <Option<String>>::sse_decode(&mut deserializer);
+            let api_title = <Option<String>>::sse_decode(&mut deserializer);
+            let api_thumbnail = <Option<String>>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| async move {
                 transform_result_sse::<_, String>(
@@ -116,6 +118,8 @@ fn wire__crate__api__download__add_video_download_impl(
                             api_url,
                             api_save_path,
                             api_format_id,
+                            api_title,
+                            api_thumbnail,
                         )
                         .await?;
                         Ok(output_ok)
@@ -714,9 +718,11 @@ impl SseDecode for crate::api::download::NebulaEvent {
             0 => {
                 let mut var_taskId = <String>::sse_decode(deserializer);
                 let mut var_name = <String>::sse_decode(deserializer);
+                let mut var_thumbnail = <Option<String>>::sse_decode(deserializer);
                 return crate::api::download::NebulaEvent::TaskAdded {
                     task_id: var_taskId,
                     name: var_name,
+                    thumbnail: var_thumbnail,
                 };
             }
             1 => {
@@ -1029,10 +1035,15 @@ impl flutter_rust_bridge::IntoIntoDart<crate::api::download::BilibiliQrCode>
 impl flutter_rust_bridge::IntoDart for crate::api::download::NebulaEvent {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         match self {
-            crate::api::download::NebulaEvent::TaskAdded { task_id, name } => [
+            crate::api::download::NebulaEvent::TaskAdded {
+                task_id,
+                name,
+                thumbnail,
+            } => [
                 0.into_dart(),
                 task_id.into_into_dart().into_dart(),
                 name.into_into_dart().into_dart(),
+                thumbnail.into_into_dart().into_dart(),
             ]
             .into_dart(),
             crate::api::download::NebulaEvent::TaskStarted { task_id } => {
@@ -1266,10 +1277,15 @@ impl SseEncode for crate::api::download::NebulaEvent {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         match self {
-            crate::api::download::NebulaEvent::TaskAdded { task_id, name } => {
+            crate::api::download::NebulaEvent::TaskAdded {
+                task_id,
+                name,
+                thumbnail,
+            } => {
                 <i32>::sse_encode(0, serializer);
                 <String>::sse_encode(task_id, serializer);
                 <String>::sse_encode(name, serializer);
+                <Option<String>>::sse_encode(thumbnail, serializer);
             }
             crate::api::download::NebulaEvent::TaskStarted { task_id } => {
                 <i32>::sse_encode(1, serializer);

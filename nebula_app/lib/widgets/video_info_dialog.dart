@@ -315,7 +315,11 @@ class _VideoInfoDialogState extends State<VideoInfoDialog> {
                       const SizedBox(width: 8),
                       FilledButton(
                         onPressed: _selectedFormatId == null ? null : () {
-                          Navigator.pop(context, _selectedFormatId);
+                          Navigator.pop(context, (
+                            formatId: _selectedFormatId!,
+                            title: info.title,
+                            thumbnail: info.thumbnail,
+                          ));
                         },
                         style: FilledButton.styleFrom(
                           backgroundColor: NebulaTheme.primaryStart,

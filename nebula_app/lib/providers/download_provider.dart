@@ -22,6 +22,7 @@ class DownloadTaskInfo {
   int? fileCount;
   DateTime? completedAt;
   String? savePath; // 添加保存路径，用于打开文件
+  String? thumbnail;
 
   DownloadTaskInfo({
     required this.id,
@@ -33,6 +34,7 @@ class DownloadTaskInfo {
     this.fileCount,
     this.completedAt,
     this.savePath,
+    this.thumbnail,
   });
 }
 
@@ -73,11 +75,12 @@ class DownloadProvider extends ChangeNotifier {
 
   void _handleEvent(NebulaEvent event) {
     switch (event) {
-      case NebulaEvent_TaskAdded(:final taskId, :final name):
+      case NebulaEvent_TaskAdded(:final taskId, :final name, :final thumbnail):
         _tasks[taskId] = DownloadTaskInfo(
           id: taskId,
           name: name,
           status: TaskStatus.pending,
+          thumbnail: thumbnail,
         );
         notifyListeners();
         
