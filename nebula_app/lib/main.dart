@@ -8,6 +8,7 @@ import 'src/rust/frb_generated.dart';
 import 'settings.dart';
 import 'theme.dart';
 import 'providers/download_provider.dart';
+import 'providers/settings_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,16 +28,20 @@ class NebulaApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => old_settings.AppSettings()),
+        ChangeNotifierProvider(create: (_) => SettingsProvider()..init()),
         ChangeNotifierProvider(create: (_) => DownloadProvider()..init()),
       ],
-      child: MaterialApp(
-        title: 'Nebula',
-        debugShowCheckedModeBanner: false,
-        theme: NebulaTheme.lightTheme,
-        darkTheme: NebulaTheme.darkTheme,
-        themeMode: ThemeMode.dark, // 默认深色模式
-        home: const MainShell(),
+      child: Consumer<SettingsProvider>(
+        builder: (context, settings, _) {
+          return MaterialApp(
+            title: 'Nebula',
+            debugShowCheckedModeBanner: false,
+            theme: NebulaTheme.lightTheme,
+            darkTheme: NebulaTheme.darkTheme,
+            themeMode: settings.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+            home: const MainShell(),
+          );
+        },
       ),
     );
   }

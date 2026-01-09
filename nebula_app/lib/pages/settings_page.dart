@@ -1,40 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import '../theme.dart';
-import '../settings.dart';
+import '../providers/settings_provider.dart';
 
 /// 设置页
-class SettingsPage extends StatefulWidget {
+class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
-
-  @override
-  State<SettingsPage> createState() => _SettingsPageState();
-}
-
-class _SettingsPageState extends State<SettingsPage> {
-  String _downloadPath = '';
-  bool _isDarkMode = true;
-  bool _autoStart = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadSettings();
-  }
-
-  Future<void> _loadSettings() async {
-    final path = await AppSettings.getDownloadPath();
-    final darkMode = await AppSettings.isDarkMode();
-    final autoStart = await AppSettings.isAutoStart();
-    setState(() {
-      _downloadPath = path;
-      _isDarkMode = darkMode;
-      _autoStart = autoStart;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final settings = context.watch<SettingsProvider>();
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -59,8 +36,8 @@ class _SettingsPageState extends State<SettingsPage> {
                       theme,
                       icon: Icons.folder_outlined,
                       title: '下载位置',
-                      subtitle: _downloadPath.isEmpty ? '未设置' : _downloadPath,
-                      onTap: _selectDownloadPath,
+                      subtitle: settings.downloadPath.isEmpty ? '未设置' : settings.downloadPath,
+                      onTap: () => _selectDownloadPath(context, settings),
                     ),
                   ],
                 ),
@@ -74,11 +51,8 @@ class _SettingsPageState extends State<SettingsPage> {
                       icon: Icons.dark_mode_outlined,
                       title: '深色模式',
                       subtitle: '使用深色主题',
-                      value: _isDarkMode,
-                      onChanged: (value) async {
-                        await AppSettings.setDarkMode(value);
-                        setState(() => _isDarkMode = value);
-                      },
+                      value: settings.isDarkMode,
+                      onChanged: (value) => settings.setDarkMode(value),
                     ),
                   ],
                 ),
@@ -91,12 +65,9 @@ class _SettingsPageState extends State<SettingsPage> {
                       theme,
                       icon: Icons.power_settings_new_outlined,
                       title: '开机启动',
-                      subtitle: '系统启动时自动运行',
-                      value: _autoStart,
-                      onChanged: (value) async {
-                        await AppSettings.setAutoStart(value);
-                        setState(() => _autoStart = value);
-                      },
+                      subtitle: '系统启动时自动运行 (仅标记，暂未实装)',
+                      value: settings.autoStart,
+                      onChanged: (value) => settings.setAutoStart(value),
                     ),
                   ],
                 ),
@@ -116,9 +87,9 @@ class _SettingsPageState extends State<SettingsPage> {
                       theme,
                       icon: Icons.code_outlined,
                       title: 'GitHub',
-                      subtitle: '查看源代码',
+                      subtitle: 'https://github.com/GZXiaoBai/Nebula',
                       onTap: () {
-                        // TODO: 打开 GitHub 页面
+                        launchUrlString('https://github.com/GZXiaoBai/Nebula');
                       },
                     ),
                   ],
@@ -276,7 +247,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 Text(
                   subtitle,
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.nebulaTextMuted,
+                  color: theme.nebulaTextMuted,
                   ),
                 ),
               ],
@@ -292,9 +263,9 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Future<void> _selectDownloadPath() async {
+  Future<void> _selectDownloadPath(BuildContext context, SettingsProvider settings) async {
     // 简化版：显示对话框让用户输入路径
-    final controller = TextEditingController(text: _downloadPath);
+    final controller = TextEditingController(text: settings.downloadPath);
     final result = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
@@ -319,8 +290,7 @@ class _SettingsPageState extends State<SettingsPage> {
     );
 
     if (result != null && result.isNotEmpty) {
-      await AppSettings.setDownloadPath(result);
-      setState(() => _downloadPath = result);
+      await settings.setDownloadPath(result);
     }
   }
 }
