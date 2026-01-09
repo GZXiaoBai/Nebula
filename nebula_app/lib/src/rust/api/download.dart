@@ -184,6 +184,9 @@ sealed class VideoFormat with _$VideoFormat {
     String? resolution,
     BigInt? filesize,
     String? formatNote,
+    double? fps,
+    String? vcodec,
+    String? acodec,
   }) = _VideoFormat;
 }
 

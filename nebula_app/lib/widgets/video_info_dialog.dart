@@ -48,6 +48,30 @@ class _VideoInfoDialogState extends State<VideoInfoDialog> {
     return '${size.toStringAsFixed(1)} ${suffixes[i]}';
   }
 
+  String _buildFormatDetails(VideoFormat format) {
+    final parts = <String>[];
+    
+    if (format.fps != null && format.fps! > 0) {
+      parts.add('${format.fps!.toInt()} FPS');
+    }
+    
+    // 简化 vcodec 显示 (e.g., avc1.640032 -> AVC, hev1.1.6.L150.90 -> HEVC)
+    if (format.vcodec != null && format.vcodec != 'none') {
+      var codec = format.vcodec!;
+      if (codec.startsWith('avc')) codec = 'AVC (H.264)';
+      else if (codec.startsWith('hev') || codec.startsWith('hvc')) codec = 'HEVC (H.265)';
+      else if (codec.startsWith('vp9')) codec = 'VP9';
+      else if (codec.startsWith('av01')) codec = 'AV1';
+      parts.add(codec);
+    }
+    
+    if (format.formatNote != null && format.formatNote!.isNotEmpty) {
+      parts.add(format.formatNote!);
+    }
+    
+    return parts.join(' • ');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -241,11 +265,11 @@ class _VideoInfoDialogState extends State<VideoInfoDialog> {
                                           color: isSelected ? NebulaTheme.primaryStart : NebulaTheme.textPrimary,
                                         ),
                                       ),
-                                      if (format.formatNote != null && format.formatNote!.isNotEmpty)
+                                      if (_buildFormatDetails(format).isNotEmpty)
                                         Padding(
                                           padding: const EdgeInsets.only(top: 2),
                                           child: Text(
-                                            format.formatNote!,
+                                            _buildFormatDetails(format),
                                             style: TextStyle(
                                               fontSize: 10,
                                               color: isSelected ? NebulaTheme.primaryStart.withOpacity(0.8) : NebulaTheme.textMuted,

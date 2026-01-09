@@ -235,6 +235,9 @@ pub struct VideoFormat {
     pub resolution: Option<String>,
     pub filesize: Option<u64>,
     pub format_note: Option<String>,
+    pub fps: Option<f64>,
+    pub vcodec: Option<String>,
+    pub acodec: Option<String>,
 }
 
 /// 检查 URL 是否为视频网站
@@ -271,6 +274,9 @@ pub async fn get_video_info(url: String) -> Result<VideoInfo, String> {
                 resolution: f.resolution,
                 filesize: f.filesize,
                 format_note: f.format_note,
+                fps: f.fps,
+                vcodec: f.vcodec,
+                acodec: f.acodec,
             })
             .collect(),
     })

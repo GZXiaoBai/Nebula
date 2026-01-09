@@ -796,6 +796,17 @@ impl SseDecode for Option<String> {
     }
 }
 
+impl SseDecode for Option<f64> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        if (<bool>::sse_decode(deserializer)) {
+            return Some(<f64>::sse_decode(deserializer));
+        } else {
+            return None;
+        }
+    }
+}
+
 impl SseDecode for Option<u64> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -861,12 +872,18 @@ impl SseDecode for crate::api::download::VideoFormat {
         let mut var_resolution = <Option<String>>::sse_decode(deserializer);
         let mut var_filesize = <Option<u64>>::sse_decode(deserializer);
         let mut var_formatNote = <Option<String>>::sse_decode(deserializer);
+        let mut var_fps = <Option<f64>>::sse_decode(deserializer);
+        let mut var_vcodec = <Option<String>>::sse_decode(deserializer);
+        let mut var_acodec = <Option<String>>::sse_decode(deserializer);
         return crate::api::download::VideoFormat {
             format_id: var_formatId,
             ext: var_ext,
             resolution: var_resolution,
             filesize: var_filesize,
             format_note: var_formatNote,
+            fps: var_fps,
+            vcodec: var_vcodec,
+            acodec: var_acodec,
         };
     }
 }
@@ -1109,6 +1126,9 @@ impl flutter_rust_bridge::IntoDart for crate::api::download::VideoFormat {
             self.resolution.into_into_dart().into_dart(),
             self.filesize.into_into_dart().into_dart(),
             self.format_note.into_into_dart().into_dart(),
+            self.fps.into_into_dart().into_dart(),
+            self.vcodec.into_into_dart().into_dart(),
+            self.acodec.into_into_dart().into_dart(),
         ]
         .into_dart()
     }
@@ -1310,6 +1330,16 @@ impl SseEncode for Option<String> {
     }
 }
 
+impl SseEncode for Option<f64> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <bool>::sse_encode(self.is_some(), serializer);
+        if let Some(value) = self {
+            <f64>::sse_encode(value, serializer);
+        }
+    }
+}
+
 impl SseEncode for Option<u64> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -1369,6 +1399,9 @@ impl SseEncode for crate::api::download::VideoFormat {
         <Option<String>>::sse_encode(self.resolution, serializer);
         <Option<u64>>::sse_encode(self.filesize, serializer);
         <Option<String>>::sse_encode(self.format_note, serializer);
+        <Option<f64>>::sse_encode(self.fps, serializer);
+        <Option<String>>::sse_encode(self.vcodec, serializer);
+        <Option<String>>::sse_encode(self.acodec, serializer);
     }
 }
 

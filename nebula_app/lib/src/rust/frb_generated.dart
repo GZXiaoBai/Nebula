@@ -651,6 +651,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  double dco_decode_box_autoadd_f_64(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw as double;
+  }
+
+  @protected
   ProgressEvent dco_decode_box_autoadd_progress_event(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return dco_decode_progress_event(raw);
@@ -728,6 +734,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  double? dco_decode_opt_box_autoadd_f_64(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw == null ? null : dco_decode_box_autoadd_f_64(raw);
+  }
+
+  @protected
   BigInt? dco_decode_opt_box_autoadd_u_64(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw == null ? null : dco_decode_box_autoadd_u_64(raw);
@@ -777,14 +789,17 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   VideoFormat dco_decode_video_format(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 5)
-      throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
+    if (arr.length != 8)
+      throw Exception('unexpected arr length: expect 8 but see ${arr.length}');
     return VideoFormat(
       formatId: dco_decode_String(arr[0]),
       ext: dco_decode_String(arr[1]),
       resolution: dco_decode_opt_String(arr[2]),
       filesize: dco_decode_opt_box_autoadd_u_64(arr[3]),
       formatNote: dco_decode_opt_String(arr[4]),
+      fps: dco_decode_opt_box_autoadd_f_64(arr[5]),
+      vcodec: dco_decode_opt_String(arr[6]),
+      acodec: dco_decode_opt_String(arr[7]),
     );
   }
 
@@ -862,6 +877,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   bool sse_decode_bool(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return deserializer.buffer.getUint8() != 0;
+  }
+
+  @protected
+  double sse_decode_box_autoadd_f_64(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_f_64(deserializer));
   }
 
   @protected
@@ -967,6 +988,17 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  double? sse_decode_opt_box_autoadd_f_64(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    if (sse_decode_bool(deserializer)) {
+      return (sse_decode_box_autoadd_f_64(deserializer));
+    } else {
+      return null;
+    }
+  }
+
+  @protected
   BigInt? sse_decode_opt_box_autoadd_u_64(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
 
@@ -1027,12 +1059,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_resolution = sse_decode_opt_String(deserializer);
     var var_filesize = sse_decode_opt_box_autoadd_u_64(deserializer);
     var var_formatNote = sse_decode_opt_String(deserializer);
+    var var_fps = sse_decode_opt_box_autoadd_f_64(deserializer);
+    var var_vcodec = sse_decode_opt_String(deserializer);
+    var var_acodec = sse_decode_opt_String(deserializer);
     return VideoFormat(
       formatId: var_formatId,
       ext: var_ext,
       resolution: var_resolution,
       filesize: var_filesize,
       formatNote: var_formatNote,
+      fps: var_fps,
+      vcodec: var_vcodec,
+      acodec: var_acodec,
     );
   }
 
@@ -1128,6 +1166,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   void sse_encode_bool(bool self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     serializer.buffer.putUint8(self ? 1 : 0);
+  }
+
+  @protected
+  void sse_encode_box_autoadd_f_64(double self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_f_64(self, serializer);
   }
 
   @protected
@@ -1232,6 +1276,16 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_opt_box_autoadd_f_64(double? self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    sse_encode_bool(self != null, serializer);
+    if (self != null) {
+      sse_encode_box_autoadd_f_64(self, serializer);
+    }
+  }
+
+  @protected
   void sse_encode_opt_box_autoadd_u_64(BigInt? self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
 
@@ -1283,6 +1337,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_opt_String(self.resolution, serializer);
     sse_encode_opt_box_autoadd_u_64(self.filesize, serializer);
     sse_encode_opt_String(self.formatNote, serializer);
+    sse_encode_opt_box_autoadd_f_64(self.fps, serializer);
+    sse_encode_opt_String(self.vcodec, serializer);
+    sse_encode_opt_String(self.acodec, serializer);
   }
 
   @protected

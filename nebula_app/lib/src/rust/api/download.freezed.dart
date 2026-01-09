@@ -1754,7 +1754,7 @@ as BigInt?,
 /// @nodoc
 mixin _$VideoFormat {
 
- String get formatId; String get ext; String? get resolution; BigInt? get filesize; String? get formatNote;
+ String get formatId; String get ext; String? get resolution; BigInt? get filesize; String? get formatNote; double? get fps; String? get vcodec; String? get acodec;
 /// Create a copy of VideoFormat
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1765,16 +1765,16 @@ $VideoFormatCopyWith<VideoFormat> get copyWith => _$VideoFormatCopyWithImpl<Vide
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is VideoFormat&&(identical(other.formatId, formatId) || other.formatId == formatId)&&(identical(other.ext, ext) || other.ext == ext)&&(identical(other.resolution, resolution) || other.resolution == resolution)&&(identical(other.filesize, filesize) || other.filesize == filesize)&&(identical(other.formatNote, formatNote) || other.formatNote == formatNote));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is VideoFormat&&(identical(other.formatId, formatId) || other.formatId == formatId)&&(identical(other.ext, ext) || other.ext == ext)&&(identical(other.resolution, resolution) || other.resolution == resolution)&&(identical(other.filesize, filesize) || other.filesize == filesize)&&(identical(other.formatNote, formatNote) || other.formatNote == formatNote)&&(identical(other.fps, fps) || other.fps == fps)&&(identical(other.vcodec, vcodec) || other.vcodec == vcodec)&&(identical(other.acodec, acodec) || other.acodec == acodec));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,formatId,ext,resolution,filesize,formatNote);
+int get hashCode => Object.hash(runtimeType,formatId,ext,resolution,filesize,formatNote,fps,vcodec,acodec);
 
 @override
 String toString() {
-  return 'VideoFormat(formatId: $formatId, ext: $ext, resolution: $resolution, filesize: $filesize, formatNote: $formatNote)';
+  return 'VideoFormat(formatId: $formatId, ext: $ext, resolution: $resolution, filesize: $filesize, formatNote: $formatNote, fps: $fps, vcodec: $vcodec, acodec: $acodec)';
 }
 
 
@@ -1785,7 +1785,7 @@ abstract mixin class $VideoFormatCopyWith<$Res>  {
   factory $VideoFormatCopyWith(VideoFormat value, $Res Function(VideoFormat) _then) = _$VideoFormatCopyWithImpl;
 @useResult
 $Res call({
- String formatId, String ext, String? resolution, BigInt? filesize, String? formatNote
+ String formatId, String ext, String? resolution, BigInt? filesize, String? formatNote, double? fps, String? vcodec, String? acodec
 });
 
 
@@ -1802,13 +1802,16 @@ class _$VideoFormatCopyWithImpl<$Res>
 
 /// Create a copy of VideoFormat
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? formatId = null,Object? ext = null,Object? resolution = freezed,Object? filesize = freezed,Object? formatNote = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? formatId = null,Object? ext = null,Object? resolution = freezed,Object? filesize = freezed,Object? formatNote = freezed,Object? fps = freezed,Object? vcodec = freezed,Object? acodec = freezed,}) {
   return _then(_self.copyWith(
 formatId: null == formatId ? _self.formatId : formatId // ignore: cast_nullable_to_non_nullable
 as String,ext: null == ext ? _self.ext : ext // ignore: cast_nullable_to_non_nullable
 as String,resolution: freezed == resolution ? _self.resolution : resolution // ignore: cast_nullable_to_non_nullable
 as String?,filesize: freezed == filesize ? _self.filesize : filesize // ignore: cast_nullable_to_non_nullable
 as BigInt?,formatNote: freezed == formatNote ? _self.formatNote : formatNote // ignore: cast_nullable_to_non_nullable
+as String?,fps: freezed == fps ? _self.fps : fps // ignore: cast_nullable_to_non_nullable
+as double?,vcodec: freezed == vcodec ? _self.vcodec : vcodec // ignore: cast_nullable_to_non_nullable
+as String?,acodec: freezed == acodec ? _self.acodec : acodec // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -1891,10 +1894,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String formatId,  String ext,  String? resolution,  BigInt? filesize,  String? formatNote)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String formatId,  String ext,  String? resolution,  BigInt? filesize,  String? formatNote,  double? fps,  String? vcodec,  String? acodec)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _VideoFormat() when $default != null:
-return $default(_that.formatId,_that.ext,_that.resolution,_that.filesize,_that.formatNote);case _:
+return $default(_that.formatId,_that.ext,_that.resolution,_that.filesize,_that.formatNote,_that.fps,_that.vcodec,_that.acodec);case _:
   return orElse();
 
 }
@@ -1912,10 +1915,10 @@ return $default(_that.formatId,_that.ext,_that.resolution,_that.filesize,_that.f
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String formatId,  String ext,  String? resolution,  BigInt? filesize,  String? formatNote)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String formatId,  String ext,  String? resolution,  BigInt? filesize,  String? formatNote,  double? fps,  String? vcodec,  String? acodec)  $default,) {final _that = this;
 switch (_that) {
 case _VideoFormat():
-return $default(_that.formatId,_that.ext,_that.resolution,_that.filesize,_that.formatNote);}
+return $default(_that.formatId,_that.ext,_that.resolution,_that.filesize,_that.formatNote,_that.fps,_that.vcodec,_that.acodec);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -1929,10 +1932,10 @@ return $default(_that.formatId,_that.ext,_that.resolution,_that.filesize,_that.f
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String formatId,  String ext,  String? resolution,  BigInt? filesize,  String? formatNote)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String formatId,  String ext,  String? resolution,  BigInt? filesize,  String? formatNote,  double? fps,  String? vcodec,  String? acodec)?  $default,) {final _that = this;
 switch (_that) {
 case _VideoFormat() when $default != null:
-return $default(_that.formatId,_that.ext,_that.resolution,_that.filesize,_that.formatNote);case _:
+return $default(_that.formatId,_that.ext,_that.resolution,_that.filesize,_that.formatNote,_that.fps,_that.vcodec,_that.acodec);case _:
   return null;
 
 }
@@ -1944,7 +1947,7 @@ return $default(_that.formatId,_that.ext,_that.resolution,_that.filesize,_that.f
 
 
 class _VideoFormat implements VideoFormat {
-  const _VideoFormat({required this.formatId, required this.ext, this.resolution, this.filesize, this.formatNote});
+  const _VideoFormat({required this.formatId, required this.ext, this.resolution, this.filesize, this.formatNote, this.fps, this.vcodec, this.acodec});
   
 
 @override final  String formatId;
@@ -1952,6 +1955,9 @@ class _VideoFormat implements VideoFormat {
 @override final  String? resolution;
 @override final  BigInt? filesize;
 @override final  String? formatNote;
+@override final  double? fps;
+@override final  String? vcodec;
+@override final  String? acodec;
 
 /// Create a copy of VideoFormat
 /// with the given fields replaced by the non-null parameter values.
@@ -1963,16 +1969,16 @@ _$VideoFormatCopyWith<_VideoFormat> get copyWith => __$VideoFormatCopyWithImpl<_
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _VideoFormat&&(identical(other.formatId, formatId) || other.formatId == formatId)&&(identical(other.ext, ext) || other.ext == ext)&&(identical(other.resolution, resolution) || other.resolution == resolution)&&(identical(other.filesize, filesize) || other.filesize == filesize)&&(identical(other.formatNote, formatNote) || other.formatNote == formatNote));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _VideoFormat&&(identical(other.formatId, formatId) || other.formatId == formatId)&&(identical(other.ext, ext) || other.ext == ext)&&(identical(other.resolution, resolution) || other.resolution == resolution)&&(identical(other.filesize, filesize) || other.filesize == filesize)&&(identical(other.formatNote, formatNote) || other.formatNote == formatNote)&&(identical(other.fps, fps) || other.fps == fps)&&(identical(other.vcodec, vcodec) || other.vcodec == vcodec)&&(identical(other.acodec, acodec) || other.acodec == acodec));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,formatId,ext,resolution,filesize,formatNote);
+int get hashCode => Object.hash(runtimeType,formatId,ext,resolution,filesize,formatNote,fps,vcodec,acodec);
 
 @override
 String toString() {
-  return 'VideoFormat(formatId: $formatId, ext: $ext, resolution: $resolution, filesize: $filesize, formatNote: $formatNote)';
+  return 'VideoFormat(formatId: $formatId, ext: $ext, resolution: $resolution, filesize: $filesize, formatNote: $formatNote, fps: $fps, vcodec: $vcodec, acodec: $acodec)';
 }
 
 
@@ -1983,7 +1989,7 @@ abstract mixin class _$VideoFormatCopyWith<$Res> implements $VideoFormatCopyWith
   factory _$VideoFormatCopyWith(_VideoFormat value, $Res Function(_VideoFormat) _then) = __$VideoFormatCopyWithImpl;
 @override @useResult
 $Res call({
- String formatId, String ext, String? resolution, BigInt? filesize, String? formatNote
+ String formatId, String ext, String? resolution, BigInt? filesize, String? formatNote, double? fps, String? vcodec, String? acodec
 });
 
 
@@ -2000,13 +2006,16 @@ class __$VideoFormatCopyWithImpl<$Res>
 
 /// Create a copy of VideoFormat
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? formatId = null,Object? ext = null,Object? resolution = freezed,Object? filesize = freezed,Object? formatNote = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? formatId = null,Object? ext = null,Object? resolution = freezed,Object? filesize = freezed,Object? formatNote = freezed,Object? fps = freezed,Object? vcodec = freezed,Object? acodec = freezed,}) {
   return _then(_VideoFormat(
 formatId: null == formatId ? _self.formatId : formatId // ignore: cast_nullable_to_non_nullable
 as String,ext: null == ext ? _self.ext : ext // ignore: cast_nullable_to_non_nullable
 as String,resolution: freezed == resolution ? _self.resolution : resolution // ignore: cast_nullable_to_non_nullable
 as String?,filesize: freezed == filesize ? _self.filesize : filesize // ignore: cast_nullable_to_non_nullable
 as BigInt?,formatNote: freezed == formatNote ? _self.formatNote : formatNote // ignore: cast_nullable_to_non_nullable
+as String?,fps: freezed == fps ? _self.fps : fps // ignore: cast_nullable_to_non_nullable
+as double?,vcodec: freezed == vcodec ? _self.vcodec : vcodec // ignore: cast_nullable_to_non_nullable
+as String?,acodec: freezed == acodec ? _self.acodec : acodec // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
