@@ -100,6 +100,14 @@ Future<bool> isBilibiliLoggedIn({required String dataDir}) =>
 Future<void> logoutBilibili({required String dataDir}) =>
     RustLib.instance.api.crateApiDownloadLogoutBilibili(dataDir: dataDir);
 
+/// 打开任务对应的文件
+Future<void> openFile({required String taskId}) =>
+    RustLib.instance.api.crateApiDownloadOpenFile(taskId: taskId);
+
+/// 打开任务所在的文件夹并选中文件
+Future<void> openFolder({required String taskId}) =>
+    RustLib.instance.api.crateApiDownloadOpenFolder(taskId: taskId);
+
 @freezed
 sealed class BilibiliLoginStatus with _$BilibiliLoginStatus {
   const BilibiliLoginStatus._();

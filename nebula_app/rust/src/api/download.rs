@@ -363,3 +363,73 @@ pub async fn logout_bilibili(data_dir: String) -> Result<(), String> {
     let auth = BilibiliAuth::new(PathBuf::from(data_dir));
     auth.logout().await.map_err(|e| e.to_string())
 }
+
+/// 打开任务对应的文件
+#[frb]
+pub async fn open_file(task_id: String) -> Result<(), String> {
+    let guard = MANAGER.read().await;
+    let manager = guard.as_ref().ok_or("下载管理器未初始化")?;
+    let id = nebula_core::TaskId::from_string(&task_id).map_err(|e| format!("无效的任务 ID: {}", e))?;
+
+    let path = manager.get_task_path(id).await.ok_or("任务不存在")?;
+    
+    #[cfg(target_os = "macos")]
+    let cmd = "open";
+    #[cfg(target_os = "windows")]
+    let cmd = "explorer";
+    #[cfg(target_os = "linux")]
+    let cmd = "xdg-open";
+
+    let status = std::process::Command::new(cmd)
+        .arg(&path)
+        .status()
+        .map_err(|e| e.to_string())?;
+
+    if !status.success() {
+       return Err("打开文件失败".to_string());
+    }
+    Ok(())
+}
+
+/// 打开任务所在的文件夹并选中文件
+#[frb]
+pub async fn open_folder(task_id: String) -> Result<(), String> {
+    let guard = MANAGER.read().await;
+    let manager = guard.as_ref().ok_or("下载管理器未初始化")?;
+    let id = nebula_core::TaskId::from_string(&task_id).map_err(|e| format!("无效的任务 ID: {}", e))?;
+
+    let path = manager.get_task_path(id).await.ok_or("任务不存在")?;
+    
+    #[cfg(target_os = "macos")]
+    {
+        let status = std::process::Command::new("open")
+            .arg("-R")
+            .arg(&path)
+            .status()
+            .map_err(|e| e.to_string())?;
+         if !status.success() { return Err("打开文件夹失败".to_string()); }
+    }
+
+    #[cfg(target_os = "windows")]
+    {
+        let status = std::process::Command::new("explorer")
+            .arg("/select,")
+            .arg(&path)
+            .status()
+            .map_err(|e| e.to_string())?;
+         if !status.success() { return Err("打开文件夹失败".to_string()); }
+    }
+    
+    #[cfg(target_os = "linux")]
+    {
+         // Linux often just opens dir
+         let parent = path.parent().ok_or("无法获取父目录")?;
+         let status = std::process::Command::new("xdg-open")
+            .arg(parent)
+            .status()
+            .map_err(|e| e.to_string())?;
+         if !status.success() { return Err("打开文件夹失败".to_string()); }
+    }
+
+    Ok(())
+}

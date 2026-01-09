@@ -37,7 +37,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueMoi,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.11.1";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -554484649;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 222029928;
 
 // Section: executor
 
@@ -443,6 +443,78 @@ fn wire__crate__api__download__logout_bilibili_impl(
                 transform_result_sse::<_, String>(
                     (move || async move {
                         let output_ok = crate::api::download::logout_bilibili(api_data_dir).await?;
+                        Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
+fn wire__crate__api__download__open_file_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::SseCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "open_file",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_task_id = <String>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| async move {
+                transform_result_sse::<_, String>(
+                    (move || async move {
+                        let output_ok = crate::api::download::open_file(api_task_id).await?;
+                        Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
+        },
+    )
+}
+fn wire__crate__api__download__open_folder_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::SseCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "open_folder",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_task_id = <String>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| async move {
+                transform_result_sse::<_, String>(
+                    (move || async move {
+                        let output_ok = crate::api::download::open_folder(api_task_id).await?;
                         Ok(output_ok)
                     })()
                     .await,
@@ -955,12 +1027,14 @@ fn pde_ffi_dispatcher_primary_impl(
         ),
         10 => wire__crate__api__download__is_video_url_impl(port, ptr, rust_vec_len, data_len),
         11 => wire__crate__api__download__logout_bilibili_impl(port, ptr, rust_vec_len, data_len),
-        12 => wire__crate__api__download__pause_download_impl(port, ptr, rust_vec_len, data_len),
-        13 => {
+        12 => wire__crate__api__download__open_file_impl(port, ptr, rust_vec_len, data_len),
+        13 => wire__crate__api__download__open_folder_impl(port, ptr, rust_vec_len, data_len),
+        14 => wire__crate__api__download__pause_download_impl(port, ptr, rust_vec_len, data_len),
+        15 => {
             wire__crate__api__download__poll_bilibili_login_impl(port, ptr, rust_vec_len, data_len)
         }
-        14 => wire__crate__api__download__resume_download_impl(port, ptr, rust_vec_len, data_len),
-        15 => wire__crate__api__download__subscribe_events_impl(port, ptr, rust_vec_len, data_len),
+        16 => wire__crate__api__download__resume_download_impl(port, ptr, rust_vec_len, data_len),
+        17 => wire__crate__api__download__subscribe_events_impl(port, ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }

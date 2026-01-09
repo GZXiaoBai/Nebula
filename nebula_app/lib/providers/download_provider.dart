@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../src/rust/api/download.dart';
 import 'dart:async';
+import 'dart:io';
+import 'package:path/path.dart' as p;
 
 /// 任务状态
 enum TaskStatus {
@@ -147,5 +149,26 @@ class DownloadProvider extends ChangeNotifier {
      // 实际添加逻辑通常在 UI 层处理（因为需要 context 显示 dialog）
      // 这里主要负责状态同步，但 add_download API 调用后会通过 Event 触发状态更新
      // 所以不需要手动在这里添加 _tasks
+  }
+
+  Future<void> openTaskFile(String taskId) async {
+    try {
+      // ignore: prefer_const_constructors
+      await openFile(taskId: taskId);
+    } catch (e) {
+      debugPrint('打开文件失败: $e');
+    }
+  }
+
+  Future<void> openTaskFolder(String taskId) async {
+    try {
+      await openFolder(taskId: taskId);
+    } catch (e) {
+       debugPrint('打开文件夹失败: $e');
+    }
+  }
+  
+  Future<void> removeTask(String taskId, {bool deleteFile = false}) async {
+    await cancelDownload(taskId: taskId, deleteFiles: deleteFile);
   }
 }

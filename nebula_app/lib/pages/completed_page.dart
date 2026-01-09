@@ -171,15 +171,15 @@ class _CompletedPageState extends State<CompletedPage> {
   }
 
   void _openFile(DownloadTaskInfo task) {
-    // TODO: 实现打开文件
+    context.read<DownloadProvider>().openTaskFile(task.id);
   }
 
   void _openFolder(DownloadTaskInfo task) {
-    // TODO: 实现打开文件夹
+    context.read<DownloadProvider>().openTaskFolder(task.id);
   }
 
   void _deleteTask(DownloadTaskInfo task) {
-    // TODO: context.read<DownloadProvider>().removeTask(task.id);
+    context.read<DownloadProvider>().removeTask(task.id, deleteFile: false);
   }
 }
 
@@ -214,7 +214,28 @@ class _CompletedTaskCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // 文件图标
+          // 文件图标或缩略图
+          if (task.thumbnail != null)
+             Container(
+                width: 72, 
+                height: 48,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(NebulaTheme.radiusSm),
+                  color: NebulaTheme.background,
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(NebulaTheme.radiusSm),
+                  child: Image.network(
+                    task.thumbnail!,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Container(
+                        color: NebulaTheme.success.withOpacity(0.15),
+                        child: const Icon(Icons.check_rounded, color: NebulaTheme.success)
+                    ),
+                  ),
+                ),
+             )
+          else
           Container(
             width: 48,
             height: 48,
