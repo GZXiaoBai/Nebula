@@ -229,14 +229,35 @@ class _VideoInfoDialogState extends State<VideoInfoDialog> {
                                   ),
                                 ),
                                 const SizedBox(width: 12),
-                                Text(
-                                  format.resolution ?? '未知分辨率',
-                                  style: TextStyle(
-                                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                                    color: isSelected ? NebulaTheme.primaryStart : NebulaTheme.textPrimary,
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        format.resolution ?? '未知分辨率',
+                                        style: TextStyle(
+                                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                                          color: isSelected ? NebulaTheme.primaryStart : NebulaTheme.textPrimary,
+                                        ),
+                                      ),
+                                      if (format.formatNote != null && format.formatNote!.isNotEmpty)
+                                        Padding(
+                                          padding: const EdgeInsets.only(top: 2),
+                                          child: Text(
+                                            format.formatNote!,
+                                            style: TextStyle(
+                                              fontSize: 10,
+                                              color: isSelected ? NebulaTheme.primaryStart.withOpacity(0.8) : NebulaTheme.textMuted,
+                                            ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                    ],
                                   ),
                                 ),
-                                const Spacer(),
+                                const SizedBox(width: 8),
                                 // 大小
                                 if (format.filesize != null)
                                   Text(
