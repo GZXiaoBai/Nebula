@@ -109,178 +109,179 @@ class _VideoInfoDialogState extends State<VideoInfoDialog> {
                _selectedFormatId = info.formats.lastOrNull?.formatId;
             }
 
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '下载视频',
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-                const SizedBox(height: 16),
-                
-                // 封面
-                if (info.thumbnail != null)
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      info.thumbnail!,
-                      height: 180,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(
-                        height: 180,
-                        color: Colors.black26,
-                        alignment: Alignment.center,
-                        child: const Icon(Icons.broken_image),
-                      ),
-                    ),
+            return SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '下载视频',
+                    style: Theme.of(context).textTheme.headlineSmall,
                   ),
-                const SizedBox(height: 16),
-
-                // 标题
-                Text(
-                  info.title,
-                  style: Theme.of(context).textTheme.titleMedium,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 8),
-
-                // 信息行
-                Row(
-                  children: [
-                    const Icon(Icons.access_time, size: 16, color: NebulaTheme.textSecondary),
-                    const SizedBox(width: 4),
-                    Text(
-                      _formatDuration(info.duration),
-                      style: const TextStyle(color: NebulaTheme.textSecondary),
-                    ),
-                    const SizedBox(width: 16),
-                    const Icon(Icons.person, size: 16, color: NebulaTheme.textSecondary),
-                    const SizedBox(width: 4),
-                    Expanded(
-                      child: Text(
-                        info.uploader ?? '未知作者',
-                        style: const TextStyle(color: NebulaTheme.textSecondary),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-
-                // 画质选择列表
-                Text(
-                  '选择画质',
-                  style: Theme.of(context).textTheme.titleSmall,
-                ),
-                const SizedBox(height: 8),
-                
-                Container(
-                  height: 240, 
-                  decoration: BoxDecoration(
-                    color: NebulaTheme.background,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: NebulaTheme.border),
-                  ),
-                  child: ListView.separated(
-                    padding: const EdgeInsets.all(8),
-                    itemCount: info.formats.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 4),
-                    itemBuilder: (context, index) {
-                      // 倒序显示，通常高质量在前或后，视 yt-dlp 而定。
-                      // 原代码用了 reversed，这里也保持倒序
-                      final format = info.formats[info.formats.length - 1 - index];
-                      final isSelected = _selectedFormatId == format.formatId;
-                      
-                      return InkWell(
-                        onTap: () {
-                          setState(() {
-                            _selectedFormatId = format.formatId;
-                          });
-                        },
-                        borderRadius: BorderRadius.circular(6),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                          decoration: BoxDecoration(
-                            color: isSelected ? NebulaTheme.primaryStart.withOpacity(0.15) : Colors.transparent,
-                            borderRadius: BorderRadius.circular(6),
-                            border: isSelected 
-                                ? Border.all(color: NebulaTheme.primaryStart.withOpacity(0.5))
-                                : Border.all(color: Colors.transparent),
-                          ),
-                          child: Row(
-                            children: [
-                              // 分辨率/格式
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                decoration: BoxDecoration(
-                                  color: NebulaTheme.card,
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: Text(
-                                  format.ext.toUpperCase(),
-                                  style: const TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold,
-                                    color: NebulaTheme.textSecondary,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Text(
-                                format.resolution ?? '未知分辨率',
-                                style: TextStyle(
-                                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                                  color: isSelected ? NebulaTheme.primaryStart : NebulaTheme.textPrimary,
-                                ),
-                              ),
-                              const Spacer(),
-                              // 大小
-                              if (format.filesize != null)
-                                Text(
-                                  _formatFileSize(format.filesize),
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: isSelected ? NebulaTheme.primaryStart : NebulaTheme.textMuted,
-                                  ),
-                                ),
-                            ],
-                          ),
+                  const SizedBox(height: 16),
+                  
+                  // 封面
+                  if (info.thumbnail != null)
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.network(
+                        info.thumbnail!,
+                        height: 140, // 减小高度 180 -> 140
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => Container(
+                          height: 140,
+                          color: Colors.black26,
+                          alignment: Alignment.center,
+                          child: const Icon(Icons.broken_image),
                         ),
-                      );
-                    },
-                  ),
-                ),
+                      ),
+                    ),
+                  const SizedBox(height: 16),
 
-                const SizedBox(height: 24),
-                
-                // 按钮
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      style: TextButton.styleFrom(
-                        foregroundColor: NebulaTheme.textSecondary,
+                  // 标题
+                  Text(
+                    info.title,
+                    style: Theme.of(context).textTheme.titleMedium,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 8),
+
+                  // 信息行
+                  Row(
+                    children: [
+                      const Icon(Icons.access_time, size: 16, color: NebulaTheme.textSecondary),
+                      const SizedBox(width: 4),
+                      Text(
+                        _formatDuration(info.duration),
+                        style: const TextStyle(color: NebulaTheme.textSecondary),
                       ),
-                      child: const Text('取消'),
+                      const SizedBox(width: 16),
+                      const Icon(Icons.person, size: 16, color: NebulaTheme.textSecondary),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          info.uploader ?? '未知作者',
+                          style: const TextStyle(color: NebulaTheme.textSecondary),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+
+                  // 画质选择列表
+                  Text(
+                    '选择画质',
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                  const SizedBox(height: 8),
+                  
+                  Container(
+                    height: 180, // 减小高度 240 -> 180
+                    decoration: BoxDecoration(
+                      color: NebulaTheme.background,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: NebulaTheme.border),
                     ),
-                    const SizedBox(width: 8),
-                    FilledButton(
-                      onPressed: _selectedFormatId == null ? null : () {
-                        Navigator.pop(context, _selectedFormatId);
+                    child: ListView.separated(
+                      padding: const EdgeInsets.all(8),
+                      itemCount: info.formats.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 4),
+                      itemBuilder: (context, index) {
+                        // 倒序显示
+                        final format = info.formats[info.formats.length - 1 - index];
+                        final isSelected = _selectedFormatId == format.formatId;
+                        
+                        return InkWell(
+                          onTap: () {
+                            setState(() {
+                              _selectedFormatId = format.formatId;
+                            });
+                          },
+                          borderRadius: BorderRadius.circular(6),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                            decoration: BoxDecoration(
+                              color: isSelected ? NebulaTheme.primaryStart.withOpacity(0.15) : Colors.transparent,
+                              borderRadius: BorderRadius.circular(6),
+                              border: isSelected 
+                                  ? Border.all(color: NebulaTheme.primaryStart.withOpacity(0.5))
+                                  : Border.all(color: Colors.transparent),
+                            ),
+                            child: Row(
+                              children: [
+                                // 分辨率/格式
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: NebulaTheme.card,
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Text(
+                                    format.ext.toUpperCase(),
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                      color: NebulaTheme.textSecondary,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Text(
+                                  format.resolution ?? '未知分辨率',
+                                  style: TextStyle(
+                                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                                    color: isSelected ? NebulaTheme.primaryStart : NebulaTheme.textPrimary,
+                                  ),
+                                ),
+                                const Spacer(),
+                                // 大小
+                                if (format.filesize != null)
+                                  Text(
+                                    _formatFileSize(format.filesize),
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: isSelected ? NebulaTheme.primaryStart : NebulaTheme.textMuted,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        );
                       },
-                      style: FilledButton.styleFrom(
-                        backgroundColor: NebulaTheme.primaryStart,
-                        disabledBackgroundColor: NebulaTheme.primaryStart.withOpacity(0.3),
-                      ),
-                      child: const Text('开始下载'),
                     ),
-                  ],
-                ),
-              ],
+                  ),
+
+                  const SizedBox(height: 24),
+                  
+                  // 按钮
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        style: TextButton.styleFrom(
+                          foregroundColor: NebulaTheme.textSecondary,
+                        ),
+                        child: const Text('取消'),
+                      ),
+                      const SizedBox(width: 8),
+                      FilledButton(
+                        onPressed: _selectedFormatId == null ? null : () {
+                          Navigator.pop(context, _selectedFormatId);
+                        },
+                        style: FilledButton.styleFrom(
+                          backgroundColor: NebulaTheme.primaryStart,
+                          disabledBackgroundColor: NebulaTheme.primaryStart.withOpacity(0.3),
+                        ),
+                        child: const Text('开始下载'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             );
           },
         ),
